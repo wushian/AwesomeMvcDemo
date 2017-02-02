@@ -1,0 +1,130 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.AjaxDropdownDemoInput
+@using AwesomeMvcDemo.Controllers.Awesome.AjaxDropdown
+@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "AjaxDropdown, Cascading DropdownList";
+}
+    <h3>Simple AjaxDropdown</h3>
+    AjaxDropdown needs an url, js func or controller to get data from, by default convention it
+    will look for a controller with the same name as it + "AjaxDropdown"<br />
+
+    <h3>Cascading dropdownlist using binding to parent </h3>
+    @*begin1*@
+    Parent Category:
+    @(Html.Awe().AjaxDropdownFor(o => o.ParentCategory)
+                 .Url(Url.Action("GetCategories","Data")))
+
+    Child Meal:
+    @(Html.Awe().AjaxDropdownFor(o => o.ChildMeal)
+                    .Parent(o => o.ParentCategory, "categories")
+                    .Url(Url.Action("GetMeals","Data")))
+    @*end1*@
+    <div class="tabs code">
+        <div data-caption="view">@Html.Source("AjaxDropdownDemo/Index.cshtml", 1)</div>
+        <div data-caption="controller">@Html.Csource("Awesome/DataController.cs")</div>
+    </div>
+    <h3>Bound to many parents</h3>
+
+    @*beginm*@
+    @Html.Awe().AjaxRadioListFor(o => o.Category1).Url(Url.Action("GetCategories", "Data"))
+    +
+    @Html.Awe().AjaxCheckboxList("Categories").Url(Url.Action("GetCategories", "Data"))+
+    @Html.Awe().TextBox("txtMealName").Placeholder("where name contains").CssClass("searchtxt")
+    = 
+    @(Html.Awe().AjaxDropdownFor(o => o.ChildOfManyMeal)
+                          .Controller<MealBoundToManyController>()
+                          .Parent(o => o.Category1)
+                          .Parent("Categories")
+                          .Parent("txtMealName","mealName"))
+    =
+    @(Html.Awe().AjaxRadioList("ChildOfManyMealRadioList")
+                          .Controller<MealBoundToManyController>()
+                          .Parent(o => o.Category1)
+                          .Parent("Categories")
+                          .Parent("txtMealName","mealName"))
+    @*endm*@
+<div class="code">
+    @Html.Source("AjaxDropdownDemo/Index.cshtml","m")
+    parent Category1 and "Categories" are being merged together and received by the controller as int[] parent 
+    @Html.Csource("Awesome/AjaxDropdown/MealBoundToManyController.cs")
+</div>
+
+<h2>Set value from get items call</h2>
+@*beginsv*@
+    @(Html.Awe().AjaxDropdown("CategorySv")
+                .Url(Url.Action("GetCategories", "Data")))
+
+    @(Html.Awe().AjaxDropdown("MealsSv")
+                            .Parent("CategorySv", "categories")
+          .Url(Url.Action("GetMealsSetValue2", "Data")))
+@*endsv*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("AjaxDropdownDemo/Index.cshtml", "sv")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/DataController.cs", "sv")</div>
+</div>
+
+@*beginenum*@
+<h2>Using enum for dropdown items</h2>
+@(Html.Awe().AjaxDropdown("EnumAdd").Url(Url.Action("GetWeatherEnumItems", "Data")))
+@*endenum*@
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("AjaxDropdownDemo/Index.cshtml", "enum")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/DataController.cs", "enum")</div>
+</div>
+
+<h2>Using predefined parameters</h2>
+    using .Parameter(name, value) additional parameters are sent to the controller
+    @*beginp*@
+    @{
+        var category1 = Db.Categories[0];
+    }
+
+    @(Html.Awe().AjaxDropdownFor(o => o.Meal1)
+                         .Url(Url.Action("GetMeals","Data"))
+                         .Parameter("categories", category1.Id))
+    @*endp*@
+    <div class="code">
+        @Html.Source("AjaxDropdownDemo/Index.cshtml","p")
+    </div>
+
+    <h3>Events and Api</h3>
+    <script>
+        $(function () {
+            $('#bApi').on('click', function () {
+                eval($('#vs').val());
+            });
+
+            $('#ApiMeal').on('aweload', function (e, data, rd) {
+                $('#log').prepend('aweload handled,\n data: ' + JSON.stringify(data) + "\n request data" + JSON.stringify(rd) + '\n\n');
+            }).on('awebeginload', function (e, data) {
+                $('#log').prepend('awebeginload handled,\n request data: ' + JSON.stringify(data) + '\n\n');
+            });
+        });
+    </script>
+    call $('#id').data('api').load() to trigger load;<br />
+
+    <br />
+    <div class="awe-il">
+        <textarea id="vs" cols="70" rows="7">
+//click execute to load all meals that contain 'ma'
+
+$('#ApiMeal').data('api').load({ params:{ text: 'ma' } });    
+
+// other things you can try
+// $('#ApiMeal').data('api').load({ params:{ text: 'a' } });    
+// or just reload
+// $('#ApiMeal').data('api').load();
+            
+</textarea><br />
+        <button id="bApi" class="awe-btn">Execute</button>
+    </div>
+    @(Html.Awe().AjaxDropdown("ApiMeal")
+                    .Url(Url.Action("GetItems","ApiMealAjaxDropdown")))
+    <br />
+    <br />
+    <textarea id="log" rows="7" style="width: 100%">
+logging events
+</textarea>
+
+

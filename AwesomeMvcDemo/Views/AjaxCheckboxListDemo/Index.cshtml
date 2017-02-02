@@ -1,0 +1,128 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.AjaxCheckboxListDemoInput
+@using AwesomeMvcDemo.Controllers.Awesome.MultiLookup
+@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "AjaxCheckBoxList, Cascading Checkbox List";
+}
+    <h3>AjaxCheckboxList</h3>
+    <div class="expl">
+        It renders a list of checkboxes, needs an url, js func or controller to get data from.
+    </div>
+
+    @*begin*@
+    <h3>Cascading CheckboxList using binding to parent</h3>
+    @(Html.Awe().AjaxCheckboxListFor(o => o.ParentCategory)
+                            .Url(Url.Action("GetCategories", "Data")))
+
+    @(Html.Awe().AjaxCheckboxListFor(o => o.ChildMeals)
+                            .Parent(o => o.ParentCategory, "categories")
+                            .Url(Url.Action("GetMeals", "Data")))
+    @*end*@
+    <div class="code">
+        @Html.Source("AjaxCheckboxListDemo/Index.cshtml")
+        @Html.Csource("Awesome/DataController.cs")
+    </div>
+     <h3>Bound to many parents</h3>
+        @(Html.Awe().MultiLookupFor(o => o.CategoriesData)
+                 .Controller<CategoriesMultiLookupController>()
+                 .ClearButton(true))
+    
+        @(Html.Awe().AjaxRadioListFor(o => o.CategoryData)
+                 .Url(Url.Action("GetCategories", "Data")))
+    
+        @(Html.Awe().AjaxCheckboxListFor(o => o.ChildOfManyMeal)
+                 .Url(Url.Action("GetMeals", "Data"))
+                 .Parent(o => o.CategoriesData, "categories")
+                 .Parent(o => o.CategoryData, "categories"))
+
+    <h3>Mods</h3>
+    @*begincr*@
+    @(Html.Awe().AjaxCheckboxList("CategoriesButtonGroup")
+            .Mod("awem.buttonGroupCheckbox")
+            .Url(Url.Action("GetCategories","Data")))
+    <div class="epanel3">
+    @(Html.Awe().AjaxCheckboxList("CategoriesMulti")
+            .Multiselect() // custom extension that sets .Mod
+            .Url(Url.Action("GetCategories","Data")))
+
+    @(Html.Awe().AjaxCheckboxList("AllMealsMulti")
+            .Multiselect(o => o.NoSelectClose())
+            .Parent("CategoriesMulti", "categories")
+            .Url(Url.Action("GetMeals", "Data")))
+        </div>
+    
+    @(Html.Awe().AjaxCheckboxList("CategoriesMulti2")
+            .Mod("awem.multiselb")
+            .Tag(new { NoSelClose = 1, InLabel = "categories" }) 
+            .Url(Url.Action("GetCategories","Data")))
+    @*(awem.multiselb) used in grid columns selector mod*@
+<br/>
+<br/>
+
+<h3>Multiselect, with custom css</h3>
+@(Html.Awe().AjaxCheckboxList("MealsAll")
+            .Multiselect(o => o.NoSelectClose())
+            .CssClass("llist")
+            .Value(Db.Meals.Take(5).Select(o => o.Id))
+            .Url(Url.Action("GetAllMeals", "Data")))
+<style>
+    .llist {
+        width: 250px;
+    }
+     .llist .multiItem {
+         width: 100%;
+     }
+</style>
+@*endcr*@
+    <div class="code">
+        @Html.Source("AjaxCheckboxListDemo/Index.cshtml", "cr")
+    </div>
+    
+
+    <h3>Using predefined parameters</h3>
+    @{
+        var category1 = Db.Categories[0];
+        var category2 = Db.Categories[1];
+    }
+    setting paremter parent = @category1.Name using .Parameter extension<br />
+    @(Html.Awe().AjaxCheckboxListFor(o => o.Meals2)
+           .Parameter("categories", category1.Id)
+           .Url(Url.Action("GetMeals", "Data")))
+
+<h3>Set value from get items call</h3>
+    @(Html.Awe().AjaxRadioList("CategorySv")
+                .Odropdown(o => o.AutoSelectFirst())
+                .Url(Url.Action("GetCategories", "Data")))
+
+    @(Html.Awe().AjaxCheckboxList("MealsSv")
+                            .Parent("CategorySv", "categories")
+                            .Url(Url.Action("GetMealsSetValue", "Data")))
+<h3>Events and Api</h3>
+    <script>
+        $(function () {
+            $('#bApi').on('click', function () {
+                eval($('#vs').val());
+            });
+
+            $('#ApiMeals').on('aweload', function (e, data, rd) {
+                $('#log').prepend('aweload handled,\n data: ' + JSON.stringify(data) + "\n request data" + JSON.stringify(rd) + '\n\n');
+            }).on('awebeginload', function (e, data) {
+                $('#log').prepend('awebeginload handled,\n request data: ' + JSON.stringify(data) + '\n\n');
+            });
+        });
+    </script>
+        <textarea id="vs" rows="7">
+$('#ApiMeals').data('api').load({ params:{ categories: @category1.Id } });     
+// $('#ApiMeals').data('api').load({ params:{ categories: [@category2.Id, @category1.Id] } }); 
+</textarea><br />
+        <button id="bApi" class="awe-btn">Execute</button>
+    
+    @Html.Awe().AjaxCheckboxList("ApiMeals").Url(Url.Action("GetMeals", "Data")).Load(false)
+    <br />
+    <br />
+    <textarea id="log" rows="7" style="width: 100%">
+logging events
+        </textarea>
+   
+
+

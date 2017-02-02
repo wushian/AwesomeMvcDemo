@@ -1,0 +1,155 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Angular.js Demo";
+}
+
+<h2>Angular.js Demo</h2>
+<br />
+
+@*begin*@
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+
+<div ng-app="myAwesomeApp">
+    <div ng-controller="MealsCtrl">
+
+        <div class="awe-il">
+            <p ng-repeat="meal in meals">
+                <input type="text" ng-model="meal.Name" />
+                <button type="button" class="awe-btn" ng-click="deleteMeal($index)">Delete</button>
+            </p>
+            <div>
+                <input type="text" placeholder="new meal" ng-model="newMeal" />
+                <button type="button" class="awe-btn" ng-click="addMeal()">Add Meal</button>
+            </div>
+        </div>
+
+        <div class="awe-il vtop" style="margin-left: 1em;">
+            @Html.Awe().AjaxRadioList("Meals").DataFunc("getAngData('meals', 'Id', 'Name')").NgModel("selectedMeal")
+            @Html.Awe().AjaxRadioList("Meals2").DataFunc("getAngData('meals', 'Id', 'Name')").Odropdown().NgModel("selectedMeal")
+            @Html.Awe().AjaxDropdown("Meals3").DataFunc("getAngData('meals', 'Id', 'Name')").NgModel("selectedMeal")
+            @Html.Awe().AjaxRadioList("Meals4").DataFunc("getAngData('meals', 'Id', 'Name')").ButtonGroup().NgModel("selectedMeal")
+            <br />
+            <br />
+            @Html.Awe().AjaxCheckboxList("MealsMulti2").DataFunc("getAngData('meals', 'Id', 'Name')").NgModel("selectedMultiMeals")
+            @Html.Awe().AjaxCheckboxList("MealsMulti").DataFunc("getAngData('meals', 'Id', 'Name')").Multiselect().NgModel("selectedMultiMeals")
+        </div>
+        <div>
+            <br />
+            <div class="elabel">Selected meal</div>
+            <input type="text" ng-model="selectedMeal" /></div>
+        <div>
+            <br />
+            <div class="elabel">Selected multi meals</div>
+            <input type="text" ng-model="selectedMultiMeals" /></div>
+        <div>
+            <br />
+            <div class="elabel"></div>
+            @(Html.Awe().TextBox("awetxt")
+                        .HtmlAttributes(null, new { ng_model = "selectedMeal", type="text", style="display:none;" })
+                        .FormatFunc("utils.prefix('value is: ')")
+                        .Numeric(o => o.Min(163).Step(2)))</div>
+
+        <div style="margin-top: 1em;">
+            @(Html.Awe().Grid("GridClientData")
+                  .DataFunc("getGridData")
+                  .Height(250)
+                  .Groupable(false)
+                  .Mod(o => o.PageInfo())
+                  .Persistence(Persistence.View)
+                  .Resizable(true)
+                  .Columns(
+                      new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+                      new Column { Bind = "Name" }))
+        </div>
+    </div>
+</div>
+
+<script>
+    var meals = @Html.Raw(DemoUtils.Encode(Db.Meals.Where(o => o.Category == Db.Categories.First())));
+    var myAwesomeApp = angular.module('myAwesomeApp', []);
+    
+    myAwesomeApp.controller('MealsCtrl', function ($scope) {
+        $scope.meals = meals;
+        $scope.selectedMeal = @Db.Meals[1].Id;
+        $scope.selectedMultiMeals = JSON.stringify(@Html.Raw(DemoUtils.Encode(new[] { Db.Meals[1].Id, Db.Meals[2].Id })));
+        
+        $scope.$watch('meals', function (oldValue, newValue) {
+            if (oldValue != newValue) {
+                renderEditors($scope.meals, ["Meals", "Meals2", "Meals3", "Meals4", "MealsMulti", "MealsMulti2"], "Id", "Name");
+                $('#GridClientData').data('api').load();
+            }
+        }, true);
+
+        // sync selectedMeal (single select editors) value change
+        $scope.$watch('selectedMeal', function(ov, nv) {
+            if (ov != nv) {
+                setTimeout(function() {
+                    $('#awetxt').data('api').render();
+                    renderEditors($scope.meals, ["Meals", "Meals2", "Meals3", "Meals4"], "Id", "Name");
+                });
+            }
+        });
+        
+        // sync selectedMultiMeals ( multiselect editors) value change
+        $scope.$watch('selectedMultiMeals', function(ov, nv) {
+            if (ov != nv) {
+                setTimeout(function() {
+                    renderEditors($scope.meals, ['MealsMulti', 'MealsMulti2'], "Id", "Name");
+                });
+            }
+        });
+        
+        // create, delete functions
+        
+        $scope.newCounter = 1000;
+        $scope.addMeal = function() {
+            $scope.meals.push({ Name: $scope.newMeal, Id:$scope.newCounter++ });
+            $scope.newMeal = '';
+        };
+
+        $scope.deleteMeal = function(index) {
+            $scope.meals.splice(index, 1);
+        };
+    });
+    
+    function getGridData(gp) {
+        var g = utils.getGridParams(gp);
+        // clone items to avoid grid sorting items in other editors
+        return utils.gridModelBuilder(this, g, $.extend(true, [], this.v.scope()["meals"]), { key:"Id", forceSort: 1 });
+    }
+    
+    // utility functions
+    function renderEditors(list, ids, kprop, cprop) {
+        $.each(ids, function(i, val) {
+            renderEditor(list, val, kprop, cprop);
+        });
+    }
+    
+    function renderEditor(list, id, kprop, cprop) {
+        var $editor = $('#' + id);
+        var o = $editor.data('o');
+        o.lrs = toKeyContent(list, kprop, cprop);
+        $editor.data('api').render(o);
+    }
+    
+    function toKeyContent(list, key, con) {
+        return $.map(list, function (o) { return { k: o[key], c: o[con] }; });
+    }
+    
+    function getAngData(collName, kprop, cprop) {
+        return function() {
+            return toKeyContent(this.v.scope()[collName], kprop, cprop);
+        };
+    }
+</script>
+@*end*@
+<br/>
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        All helpers get data from the angular $scope by using the DataFunc extension.
+        <br />
+        The value of the editors and select items are synchronized using angular $scope.$watch and the client side api of the editors $(#EditorId).data('api').render(o).<br />
+        A custom helper extension is used .NgModel to set hte ng-model attribute to the value input, it also sets type="text" and style="display:none;" which is a workaround because angular.js doesn't handle ng-model for hidden inputs. 
+    </div>
+    <div data-caption="view">@Html.Source("AngularDemo/Index.cshtml")</div>
+</div>

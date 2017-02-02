@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "ASP.net MVC Awesome Popup Form Demos";
+}
+<h1>PopupForm - used to load and post a form in a popup</h1>
+<div class="expl">
+    It can be initialized using <code>Html.Awe().InitPopupForm</code> and opened using <code>awe.open</code> js function.
+    It loads the content from the <code>.Url(string)</code> provided and when the user clicks ok, the form will be posted, if the result of the post is view/string (usually when ModelState not valid) the content of the popup will be replaced with the post result,
+    when the result is a json object the popup will close, if the PopupForm has a success function defined the json object will be passed that function.
+</div>
+<br/>
+You can see the PopupForm being used in all of the Crud demos (<a href="@Url.Action("Index", "GridCrudDemo")">Grid</a>, <a href="@Url.Action("Index", "Dinners")">AjaxList</a>), 
+also in the <a href="@Url.Action("Index","WizardDemo")">Wizard Demo</a>. 
+In most Crud demos the call to Html.Awe().InitPopupForm is being wrapped in a custom helper Html.InitCrudPopupsForGrid which calls this helper multiple times (for Create, Edit, Delete).
+
+<h2>PopupForm with Success function assigned</h2>
+@*begin*@
+@(Html.Awe().InitPopupForm()
+                    .Name("createDinner")
+                    .Height(400)
+                    .Url(Url.Action("Create", "DinnersGridCrud"))
+                    .Success("created"))
+
+<button type="button" class="awe-btn" onclick="awe.open('createDinner')">
+    Create</button>
+
+<script type="text/javascript">
+    function created(result, popup) {
+        alert('dinner created');
+    }
+</script>
+@*end*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("PopupFormDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/DinnersGridCrudController.cs")</div>
+    <div data-caption="popup view">@Html.Source("DinnersGridCrud/Create.cshtml")</div>
+</div>
+<h2>Sending client side paramters to server on content load</h2>
+
+Value sent to the server action that returns the popup's content:
+    <input type="text" id="txtParam1" value="hi there" />
+
+<br />
+
+@*begin4*@
+@(Html.Awe().InitPopupForm()
+            .Name("PopupFormParams")
+            .Url(Url.Action("PopupWithParameters"))
+            .Button("Help", "sayhi")
+            .Parent("txtParam1")
+            .Parameter("p1", 15)
+            .ParameterFunc("giveParams"))
+
+<button type="button" onclick="awe.open('PopupFormParams')" class="awe-btn">Open popup</button>
+<script>
+    function giveParams() {
+        return { a: "hi", b: "how are you" };
+    }
+
+    function sayhi() {
+        alert('hi');
+    }
+</script>
+@*end4*@
+<div class="code tabs">
+    <div data-caption="view">@Html.Source("PopupFormDemo/Index.cshtml", "4")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Helpers/PopupFormDemoController.cs")</div>
+    <div data-caption="popup view">@Html.Source("PopupFormDemo/PopupWithParameters.cshtml")</div>
+</div>
+
+<h2>Submit confirmation using OnLoad func</h2>
+@*begincs*@
+@(Html.Awe().InitPopupForm()
+                    .Name("confirmedPopup")
+                    .Height(200)
+                    .Url(Url.Action("PopupConfirm"))
+                    .UseDefaultButtons(true)
+                    .OnLoad("regConfirm"))
+
+<button type="button" onclick="awe.open('confirmedPopup')" class="awe-btn">Open popup</button>
+<script>
+    function regConfirm() {
+        var $popup = this.p.d;
+        var $form = $popup.find('form');
+        $form.on('submit', function(e) {
+            if (!$form.valid() || !confirm("Are you sure ?")) {
+                return false;
+            }
+        });
+    }
+</script>
+@*endcs*@
+<div class="code tabs">
+    <div data-caption="view">@Html.Source("PopupFormDemo/Index.cshtml", "cs")</div>
+</div>

@@ -1,0 +1,1104 @@
+﻿@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
+
+body, ul, fieldset, textarea, img, legend, button, i
+{
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+input
+{
+    box-sizing: border-box;
+}
+
+body
+{
+    background-color: #fafafa;
+    font-family: Verdana, Tahoma, Arial, "Helvetica Neue", Helvetica, Sans-Serif;
+    font-size: 14px;
+    color: #262626;
+    overflow-y: scroll;
+}
+
+.ui-widget button, .awe-col, .elabel, .menu, h1, h2, h3, b
+{
+    font-family: "Open Sans", Verdana, Tahoma, Arial, "Helvetica Neue", Helvetica, Sans-Serif;
+}
+
+@-ms-viewport
+{
+    width: auto !important;
+}
+
+select.awe-display
+{
+    padding: 0.2em;
+    min-width: 9em;
+    border-radius: 2px;
+}
+
+label
+{
+    margin-bottom: 3px;
+}
+
+.ico-edit, .ico-del
+{
+    display: block;
+    overflow: hidden;
+    height: 18px;
+    width: 18px;
+    background-repeat: no-repeat;
+}
+
+.ico-edit
+{
+    background-position: 0 -1px;
+}
+
+.ico-del
+{
+    background-position: -17px -1px;
+}
+
+.bar
+{
+    overflow: auto;
+    padding: 2px 0;
+}
+
+.bar .awe-field {
+    margin-bottom: 5px;
+}
+
+.ui-dialog.awe-rtl {
+    direction: rtl;
+}
+
+.vtop {
+    vertical-align: top;
+}
+
+.frame {
+    border: 1px solid #cac4e5;
+    border-radius: 2px;
+    padding: 1em 1em;
+}
+
+/* form components */
+.srcfitem {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.srcfitem .awe-field {
+    width: 100%;
+}
+
+@media (max-width: 440px) {
+    .srcfitem {
+        width: 100%;
+    }
+
+    .srcfitem:not(:last-child) {
+        margin-bottom: 5px;
+    }
+}
+
+.hint {
+    color: gray;
+}
+
+.efield
+{
+    padding: 5px;
+    padding-right: 15px;
+}
+
+.elabel
+{
+    text-align: right;
+    width: 150px;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+    vertical-align: top;
+    margin-top: 1px;
+    padding-right: 3px;
+}
+
+    .elabel label
+    {
+        font-weight: 600;
+    }
+
+@media (max-width: 480px)
+{
+    .elabel
+    {
+        text-align: left;
+        display: block;
+    }
+}
+
+.elabel2
+{
+    text-align: right;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+    vertical-align: top;
+    margin-top: 1px;
+    padding-right: 3px;
+}
+
+.esubmit
+{
+    margin-left: 155px;
+}
+
+.einput
+{
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+    vertical-align: top;
+}
+
+    .einput .odropdown, .einput .awe-datepicker-field, .einput .awe-lookup-field, .einput .awe-multilookup-field, .einput .etxt,
+    .einput textarea, .einput .awe-ajaxdropdown-field
+    {
+        min-width: 15em;
+    }
+
+.awe-popup .einput .awe-multilookup-field .awe-display
+{
+    max-height: 7.3em;
+    overflow-y: auto;
+}
+
+.einput .awe-timepicker-field .awe-display
+{
+    width: 5em;
+}
+
+select.awe-hour, select.awe-min, select.awe-apm
+{
+    min-width: 1em;
+}
+
+.awe-searchbtn
+{
+    padding: 0.35em 0.5em;
+    vertical-align: top;
+}
+
+a:link
+{
+    color: #00f;
+    text-decoration: none;
+}
+
+a:visited
+{
+    color: #00f;
+}
+
+a:hover
+{
+    color: #1d60ff;
+    text-decoration: underline;
+}
+
+.black-cab .oitem a {
+    color: inherit;
+}
+
+.logo
+{
+    background: url(awedemo.png) -2px -2px;
+    width: 30px;
+    height: 33px;
+    display: block;
+}
+
+#btnMenuToggle
+{
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 2px;
+    vertical-align: middle;
+    line-height: 1em;
+    background-color: transparent;
+    border: solid 1px rgba(0, 0, 0, 0);
+    outline: none;
+}
+
+    #btnMenuToggle:hover
+    {
+        border-color: #c5c5c5;
+        background: #F0F0F0;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    }
+
+.iconGuide
+{
+    width: 17px;
+    height: 14px;
+    background: url(awedemo.png) -58px -12px;
+    display: inline-block;
+}
+
+.on .iconGuide
+{
+    background: url(awedemo.png) -36px -12px;
+}
+
+.guideCaret
+{
+    border-top-color: #737373;
+    border-width: 3px 3px 0;
+    margin-top: -3px;
+    margin-left: -3px;
+}
+
+.on .guideCaret
+{
+    border-top-color: #E63127;
+}
+
+.menu
+{
+    display: inline-block;
+    line-height: 3em;
+    margin-left: 1em;
+}
+
+    .menu li
+    {
+        display: inline-block;
+        *display: inline;
+        font-size: 18px;
+        vertical-align: middle;
+        text-rendering: optimizeLegibility;
+        margin-right: 0.5em;
+    }
+
+    .menu a
+    {
+        text-decoration: none;
+        color: rgb(15, 93, 15);
+    }
+
+        .menu a:hover
+        {
+            color: red;
+        }
+
+#Menu a
+{
+    text-decoration: none;
+    display: block;
+}
+
+#Menu .awe-row
+{
+    line-height: 1.5em;
+}
+
+/* HEADINGS   
+----------------------------------------------------------*/
+h1, h2, h3, h4, h5, h6
+{
+    font-size: 1.5em;
+}
+
+h1
+{
+    font-size: 1.5em;
+    padding-bottom: 0;
+    margin-top: 12px;
+    margin-bottom: 15px;
+}
+
+h4
+{
+    font-size: 15px;
+    margin-top: 17px;
+}
+
+h5
+{
+    font-size: 15px;
+}
+
+/* PRIMARY LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+.page
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#title
+{
+    margin-left: 47px;
+}
+
+#main
+{
+    border-top: 1px solid gainsboro;
+    padding: 10px;
+    background: whitesmoke;
+}
+
+#footer
+{
+    padding: 1em;
+}
+
+#samples
+{
+    width: 330px;
+    list-style: none;
+    margin-top: 1em;
+}
+
+    #samples li
+    {
+        margin: 1px;
+    }
+
+    #samples .awe-btn
+    {
+        width: 98%;
+    }
+
+/* FORM LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+.mbtn
+{
+    padding: 0.4em 0.9em;
+}
+
+.cfgform input[type=checkbox]
+{
+    vertical-align: top;
+}
+
+.cfgform input[type=submit]
+{
+    padding: 2px 13px;
+}
+
+.cfgform label
+{
+    line-height: 1.7em;
+}
+
+.section
+{
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+    vertical-align: top;
+    background-color: #fafafa;
+    line-height: 1.7em;
+}
+
+    .section select
+    {
+        width: 80px;
+    }
+
+    .section label input[type=checkbox]
+    {
+        vertical-align: middle;
+    }
+
+fieldset
+{
+    border: 1px solid #ddd;
+    padding: 3px 5px;
+    margin: 3px 0 3px 3px;
+    border-radius: 2px;
+}
+
+legend
+{
+    font-size: 13px;
+    color: #555;
+    font-weight: bold;
+    width: auto;
+}
+
+textarea
+{
+    min-height: 75px;
+}
+
+input[type="text"], textarea
+{
+    margin: 0;
+    padding: 5px 8px 6px;
+    color: #333;
+    border: 1px solid #D5D5D5;
+    border-top-color: #B5B5B5;
+    -moz-border-radius: 1px;
+    -webkit-border-radius: 1px;
+    border-radius: 1px;
+    -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.1);
+    -ms-box-shadow: inset 0 1px 1px rgba(0,0,0,0.1);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"]
+{
+    width: 182px;
+    border-radius: 2px;
+    vertical-align: middle;
+}
+
+#vs {
+    width: 100%;
+}
+
+.section label select, .section label input
+{
+    margin: 0;
+    vertical-align: middle;
+}
+
+.section label
+{
+    padding: 3px;
+    border-radius: 2px;
+    border: 1px solid gainsboro;
+    margin: 2px 0;
+    display: inline-block;
+    zoom: 1;
+    *display: inline-block;
+    height: 30px;
+    background-color: whitesmoke;
+}
+
+.section input[type=submit]
+{
+    padding: 2px 13px;
+}
+
+input.mini
+{
+    width: 35px;
+    height: 18px;
+    padding: 2px;
+    line-height: 12px;
+    font-weight: normal;
+}
+
+.chkbox {
+    display: inline-block;
+    border: 1px solid #ccc;
+    width: 18px;
+    height: 18px;
+    background-color: #fff !important;
+    vertical-align: text-top;
+}
+
+.black-cab .chkbox {
+    background-color: inherit !important;
+    border-color: #303948;
+}
+
+.awe-selected .chkbox, .selected.chkbox {
+    background: url('checkmark.png') -4px -2px;
+}
+
+.partselected.chkbox {
+    background: url('checkmark-partial.png') -2px -3px;
+}
+
+/* MISC  
+----------------------------------------------------------*/
+.clear
+{
+    clear: both;
+}
+
+.error
+{
+    color: Red;
+}
+
+#menucontainer
+{
+    margin-top: 20px;
+}
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+@media (max-width: 767px)
+{
+    .field-validation-error
+    {
+        display: block;
+    }
+}
+
+.field-validation-error, .validation-summary-errors
+{
+    color: #ff0000;
+}
+
+    .validation-summary-errors ul
+    {
+        list-style: none;
+    }
+
+.field-validation-valid
+{
+    display: none;
+}
+
+.input-validation-error:not(input)
+{
+    background-color: #ffeeee;
+}
+/* Styles for editor and display helpers
+----------------------------------------------------------*/
+.display-label, .editor-label
+{
+    margin: 1em 0 0 0;
+}
+
+.display-field, .editor-field
+{
+    margin: 0.5em 0 0 0;
+}
+
+.text-box
+{
+    width: 30em;
+}
+
+    .text-box.multi-line
+    {
+        height: 6.5em;
+    }
+
+.tri-state
+{
+    width: 6em;
+}
+
+.stx
+{
+    width: 30px !important;
+}
+
+.prettyprint
+{
+    overflow: auto !important;
+    border: none;
+    background: transparent;
+    word-wrap: normal;
+}
+
+pre
+{
+    padding: 5px;
+    border-radius: 2px;
+    overflow: auto;
+}
+
+.codeWrap
+{
+    position: relative;
+    background-color: #fff;
+    border: 1px solid gainsboro;
+    margin: 10px 0;
+}
+
+.codePath
+{
+    right: 0;
+    border: 1px solid gainsboro;
+    color: gray;
+    padding: 2px 5px;
+    background: white;
+    border-right: none;
+    border-top: none;
+}
+
+@media (min-width: 780px)
+{
+    .codePath
+    {
+        position: absolute;
+        border-radius: 0 0 0 3px;
+    }
+}
+
+.note
+{
+    word-break: break-all;
+    word-wrap: break-word;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    color: #222;
+    border-color: #F0C36D;
+    background-color: #F9EDBE;
+    white-space: pre;
+}
+
+.ib
+{
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+    vertical-align: top;
+}
+
+.pnl
+{
+    min-width: 200px;
+    padding: 10px;
+}
+
+.fl
+{
+    float: left;
+}
+
+.hidden
+{
+    display: none;
+}
+
+@media (min-width: 500px) {
+    .settings {
+        float: right;
+        margin-top: -5px;
+    }
+}
+
+.setting
+{
+    display: inline-block;
+    margin: 0 0 5px 5px;
+}
+
+#Menu .awe-row td
+{
+    padding: 0.3em 0.2em;
+    border-right: none;
+}
+
+#Menu .awe-idn
+{
+    width: 7px;
+}
+
+#Menu tr.selected:not(.awe-ghead) .awe-idn:first-child
+{
+    background-color: rgb(0, 128, 148);
+    background-color: #5c87b2;
+}
+
+#demoMenu
+{
+    width: 13.5em;
+    float: left;
+}
+
+#demoMenu td
+{
+    border-bottom: none;
+}
+
+a.awe-btn
+{
+    text-decoration: none;
+}
+
+.shcode
+{
+    cursor: pointer;
+    color: rgb(0, 6, 101);
+    border: none;
+    text-decoration: underline;
+    line-height: 2em;
+}
+
+.errPopup
+{
+    font-size: 11px;
+}
+
+    .errPopup .ui-dialog-titlebar
+    {
+        padding: 0.2em 1em;
+    }
+
+.csettings
+{
+    padding: 1em;
+    background: white;
+    margin: 5px 0;
+    border: 1px solid gainsboro;
+    line-height: 1.7em;
+}
+
+    .csettings label
+    {
+        font-weight: normal;
+        margin-right: 1em;
+    }
+
+    .csettings .awe-field:not(.awe-chk-field)
+    {
+        min-width: 7em;
+        font-weight: normal;
+    }
+
+.collabel
+{
+    width: 120px;
+    display: inline-block;
+    text-align: right;
+}
+
+.expl
+{
+    padding: 1em;
+    background: white;
+    line-height: 1.7em;
+}
+
+    .expl li
+    {
+        padding: 3px 0;
+        list-style: none;
+    }
+
+    .expl p
+    {
+        padding: 0;
+        margin: 0;
+    }
+
+code
+{
+    font-family: Consolas, Verdana, Tahoma;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.awe-ajaxdropdown-field, .awe-ajaxcheckboxlist-field, .awe-ajaxradiolist-field
+{
+    vertical-align: top;
+}
+
+#log {
+    word-break: break-word;
+}
+
+.log
+{
+    height: 70px;
+    overflow-y: scroll;
+    background: white;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    width: 100%;
+    padding: 5px 10px;
+}
+
+.wwrap
+{
+    word-break: break-all;
+}
+
+a.anchor
+{
+    color: white;
+    margin-left: 5px;
+    color: green;
+    outline: none;
+}
+
+    a.anchor i
+    {
+        display: none;
+    }
+
+h2:hover .anchor i, h3:hover .anchor i
+{
+    display: inline-block;
+    font-size: 90%;
+}
+
+h2:hover .anchor, h3:hover .anchor
+{
+    display: inline;
+    display: inline;
+}
+
+pre.prettyprint
+{
+    margin: 0;
+    border: none !important;
+    font-size: 15px;
+}
+
+.tabs .codeWrap
+{
+    margin: 0;
+    border: none;
+}
+
+.chtop .awe-field {
+    vertical-align: top;
+}
+
+.lrgf .awe-field {
+    width: 15em;
+}
+
+.epanel .awe-field
+{
+    margin-bottom: 10px;
+}
+
+.epanel .buttonGroup {
+    width: initial;
+}
+
+.epanel3 .awe-field
+{
+    width: 300px;
+    margin: 5px 0;
+}
+
+.msearch.awe-display.awe-txt
+{
+    width: 189px;
+    padding: 3px 7px;
+    margin-bottom: 3px;
+}
+
+.wizardForm {
+    padding: .5em 1em;
+}
+
+/* tabstrip */
+.tab-btn
+{
+    background: #FFF;
+    padding: 5px;
+    border: 1px solid #DCDCDC;
+    border-bottom: none;
+    border-radius: 7px 7px 0 0;
+    color: blue;
+}
+
+    .tab-btn.active
+    {
+        border: 1px solid #DCDCDC;
+        margin-bottom: -2px;
+        border-bottom: 1px solid #FFF;
+        outline: none;
+    }
+
+    .tab-btn:active
+    {
+        outline: none;
+    }
+
+.tabscontent
+{
+    overflow: auto;
+    border: 1px solid gainsboro;
+}
+
+/* end tabstrip */
+
+/* grid keyboard navigation */
+
+.keynav .awe-row:focus
+{
+    outline: auto 5px #4D90FE !important;
+}
+
+@-moz-document url-prefix() /* to display row outline on firefox */
+{
+    .keynav .awe-row:focus
+    {
+        outline: 1px solid #4D90FE !important;
+    }
+}
+
+
+/* begin custom loading 2*/
+/* http://tobiasahlin.com/spinkit */
+.myspinner {
+  margin: 100px auto 0;
+  width: 100px;
+  text-align: center;
+}
+
+.myspinner > div {
+  width: 20px;
+  height: 20px;
+  background-color: #4d90fe;
+
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: mysk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: mysk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.myspinner .mybounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.myspinner .mybounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes mysk-bouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes mysk-bouncedelay {
+  0%, 80%, 100% { 
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 40% { 
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
+}
+/* end custom loading 2*/
+
+/* remote odropdown git demo */
+.thumb {
+        float: left;
+        width: 40px;
+        height: 40px;
+        margin-left: -58px;
+        margin-top: 3px;
+        border-radius: 3px;
+    }
+
+    .cthumb {
+        width: 20px;
+        height: 20px;
+        margin-right: 3px;
+        border-radius: 3px;
+    }
+
+    .content {
+        margin-left: 58px;
+        min-height: 47px;
+    }
+
+    .title {
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .desc {
+        font-size: 10px;
+        word-wrap: break-word;
+        white-space: nowrap;
+        margin: 0;
+        margin-top: -8px;
+        overflow: hidden;
+        max-height: 30px;
+        max-width: 250px;
+        text-overflow: ellipsis;
+    }
+/* end remote odropdown git demo*/
+
+.sharebox
+{
+    float: right;
+    padding: 10px 5px 0;
+}
+
+@media (max-width: 450px) {
+    .sharebox{ display: none; }
+}
+
+.sharebox .odropdown {
+    min-width: initial;
+}
+
+body:not(.black-cab) .sharebox .caption {
+    color: blue;
+}
+
+.wui .menuddmenu .focus a, .met .menuddmenu .focus a, .gui3 .menuddmenu .focus a, .start .menuddmenu .focus a
+{
+    color: #fff;
+}
+
+.wui .downlMenu .focus {
+    background-color: whitesmoke;
+}
+
+.wui .downlMenu .focus a {
+    color: blue;
+}
+
+.awe-grid .awe-btn.mpbtn
+{
+    padding: 0 .5em;
+}
+
+
+@media (max-width: 550px)
+{
+    .gridPageInfo
+    {
+        display: none;
+    }
+}
+
+@media (max-width: 730px)
+{
+    .gridPageSize {
+        display: none;
+    }
+}
+
+.awe-btn.inlDel {
+    padding: 4px;
+}
+
+body:not(.black-cab)  .awe-content .wrap {
+  background-color: #F5F5F5;
+  margin: 0;
+  border-bottom: 1px solid #DCDCDC;
+}
+
+.ui-autocomplete {
+    z-index: 5000;
+}
+
+.formLoad {
+    position: relative;
+}

@@ -1,0 +1,74 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridDemoSortingCfgInput
+@using AwesomeMvcDemo.Controllers.Awesome.AjaxDropdown
+@{
+    ViewBag.Title = "Grid sorting, single column and multiple column sorting";
+}
+
+<h3>Sorting</h3>
+<div class="csettings">
+    <form action="@Url.Action("SortingContent", "GridDemo")" method="post" class="ConfigForm">
+        <label>
+            Sortable:
+        @Html.Awe().CheckBoxFor(o => o.Sortable)
+        </label>
+        <label>
+            Single Column Sort: @Html.Awe().CheckBoxFor(o => o.SingleColumnSort)</label>
+        <br />
+
+        <div>
+            <div class="collabel">Person column: </div>
+            <label>
+                Sortable @Html.Awe().CheckBoxFor(o => o.PersonSortable)
+            </label>
+            <label>
+                Sort @(Html.Awe().AjaxDropdownFor(o => o.PersonSort).Controller<SortAjaxDropdownController>())</label>
+            <label>
+                Sort Rank @Html.Awe().TextBoxFor(o => o.PersonRank).Numeric()
+            </label>
+        </div>
+
+        <div>
+            <div class="collabel">Food column: </div>
+            <label>
+                Sortable @Html.Awe().CheckBoxFor(o => o.FoodSortable)
+            </label>
+            <label>
+                Sort @(Html.Awe().AjaxDropdownFor(o => o.FoodSort).Controller<SortAjaxDropdownController>())
+            </label>
+            <label>
+                Sort Rank @Html.Awe().TextBoxFor(o => o.FoodRank).Numeric()
+            </label>
+        </div>
+
+        <input type="submit" value="change settings" class="awe-btn mbtn" />
+
+    </form>
+</div>
+
+<div id="demoContent">
+    @Html.Partial("SortingContent")
+</div>
+@Html.Awe().Form().FormClass("ConfigForm").Success("setContent")
+<script type="text/javascript">
+    function setContent(o) {
+        $('#SortingGrid').data('api').clearpersist();
+        $('#demoContent').html(o);
+    }
+</script>
+<br />
+<div class="tabs">
+    <div data-caption="view">@Html.Source("GridDemo/SortingContent.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/Grid/LunchGridController.cs")</div>
+</div>
+<br />
+<div class="expl">
+    <p>
+        Sorting can be enabled or disabled for the whole grid by using the <code>.Sortable(bool)</code>
+        and can be set for each column by setting the <code>Column.Sortable</code>
+    </p>
+    <ul>
+        <li><code>SingleColumnSort</code> - enables sorting by one column at a time</li>
+        <li><code>Column.Sort</code> - initial sorting for this column (None | Asc | Desc)</li>
+        <li><code>Column.SortRank</code> - initial sort rank for this column</li>
+    </ul>
+</div>

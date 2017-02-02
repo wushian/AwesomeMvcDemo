@@ -1,0 +1,27 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridDemoCfgInput
+@(Html.Awe().Grid("Grid")
+      .Mod(o => o.ColumnsSelector().PageSize().PageInfo())
+      .Columns(
+          new Column{Bind = "Id", Width = 75, Groupable = false, Resizable = false},
+          new Column{Bind = "Person"},
+          new Column{Bind = "Food"},
+          new Column{Bind = "Location"},
+          new Column{Bind = "Date", Width = 120},
+          new Column{Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country"},
+          new Column{Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header="Chef"}
+      )
+      .Url(Url.Action("GetItems", "LunchGrid")) // used for remote data
+      .DataFunc(Model.DataFunc) // used for client side data
+      .Persistence(Persistence.View) // save collapsed groups and nodes when switching between grid pages
+      .LoadOnParentChange(Model.LoadOnParentChange)
+      .Resizable(Model.Resizable)
+      .Reorderable(Model.Reorderable)
+      .Groupable(Model.Groupable)
+      .Sortable(Model.Sortable)
+      .SingleColumnSort(Model.SingleColumnSorting)
+      .ShowGroupedColumn(Model.ShowGroupedColumn)
+      .Page1OnSort(Model.Page1OnSort)
+      .Height(Model.Height)
+      .Parent("txtperson", "person") /* binds to person parameter*/
+      .Parent("txtfood", "food")
+      .Parent("oCountry", "country")) 

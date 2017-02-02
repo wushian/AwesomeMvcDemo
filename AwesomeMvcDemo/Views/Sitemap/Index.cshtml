@@ -1,0 +1,31 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "ASP.net MVC Awesome Demo Sitemap";
+}
+<h2>All demos</h2>
+<div id="sitemap">
+    @{ foreach (var root in MySiteMap.Items.Where(o => o.Parent == null))
+       { 
+        <div class="mgroup">
+            @Html.Partial("parent", root)
+        </div>
+       } 
+    }
+</div>
+
+<style>
+    #sitemap li
+    {
+        list-style: none;
+        padding: 5px 0;
+    }
+
+    .mgroup
+    {
+        float: left;
+        vertical-align: top;
+        margin: 10px;
+    }
+</style>
+
+

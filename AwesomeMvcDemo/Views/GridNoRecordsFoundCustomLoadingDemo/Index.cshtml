@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = "Grid Custom Loading, display no records found";
+}
+<h2>Grid with custom loading animation</h2>
+<div class="expl">
+    Using grid mods to add custom loading animation, try to change page or filter the grid to get the loading animation, there's a Task.Delay used on the server side.<br />
+    Search for something unexistent to get the "no records found"  message.
+</div>
+<br />
+@*begin*@
+<div style="padding-bottom: .5em">
+    <div class="awe-il">@Html.Awe().TextBox("txtperson").Placeholder("search for person ...").CssClass("searchtxt")</div>
+    <div class="awe-il">@Html.Awe().TextBox("txtfood").Placeholder("search for food ...").CssClass("searchtxt")</div>
+</div>
+@(Html.Awe().Grid("CustomLoadingGrid")
+                .Mod(o => o.Loading().ColumnsSelector())
+                .Columns(
+                    new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Location" },
+                    new Column { Bind = "Date", Width = 120 },
+                    new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+                    new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" })
+                .Url(Url.Action("GridGetItems"))
+                .Height(300)
+                .Resizable()
+                .Reorderable()
+                .Parent("txtperson", "person")
+                .Parent("txtfood", "food"))
+@*there's also css for the loading animation in common.css*@
+@*end*@
+<br/>
+<br/>
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        Setting custom loading animation, css and html for the loading animation grabbed from here: <a href="http://tobiasahlin.com/spinkit/">http://tobiasahlin.com/spinkit/</a>.
+        You can use a different loading animation by editing the html in awem.js (gridLoading func) 
+        and replacing css from awem.css or you can add another function that calls awem.gridLoading as done for the next grid.
+    </div>
+    <div data-caption="view">
+        @Html.Source("GridNoRecordsFoundCustomLoadingDemo/Index.cshtml")
+    </div>
+    <div data-caption="controller">
+        @Html.Csource("Demos/Grid/GridNoRecordsFoundCustomLoadingDemoController.cs")
+    </div>
+</div>
+
+<br/>
+<br/>
+
+@*begin2*@
+@(Html.Awe().Grid("CustomLoadingGrid2")
+                .Mod(o => o.Custom("gridLoading1").ColumnsSelector())
+                .Height(300)
+                .Resizable()
+                .Reorderable()
+                .Columns(
+                    new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Location" },
+                    new Column { Bind = "Date", Width = 120 },
+                    new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+                    new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" })
+                .Url(Url.Action("GridGetItems")))
+
+<script>
+    function gridLoading1(o) {
+        return awem.gridLoading(o, { lhtm: '<div class="myspinner"><div class="mybounce1"></div><div class="mybounce2"></div><div class="mybounce3"></div></div>', ctm:15 });
+    }
+    // css for this grid loading (found in common.css file) has been prefixed with 'my' so it would not interfere with the css from the previous example 
+</script>
+@*end2*@
+<div class="code">
+    @Html.Source("GridNoRecordsFoundCustomLoadingDemo/Index.cshtml", 2)
+</div>

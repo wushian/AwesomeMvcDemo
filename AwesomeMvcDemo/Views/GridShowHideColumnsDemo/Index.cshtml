@@ -1,0 +1,33 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridHideColumnsDemoInput
+@{
+    ViewBag.Title = "Grid Hide Columns Demo - ASP.net MVC Awesome";
+}
+
+    <h2>Grid show hide columns</h2>
+    <p>
+    You might also like to see @Html.ActionLink("Grid hide columns api demo", "Index", "GridShowHideColumnsApiDemo")
+        </p>
+    <fieldset class="section">
+        <legend>pick columns</legend>
+    <form class="cfgForm">
+    <label>Show Food @Html.Awe().CheckBoxFor(o => o.ShowFood)</label>
+    <label>Show Location @Html.Awe().CheckBoxFor(o => o.ShowLocation)</label>
+    <label>Show Date @Html.Awe().CheckBoxFor(o => o.ShowDate)</label>
+        <input type="submit" value="Apply" class="awe-btn"/>
+        </form>
+        </fieldset>
+    
+    @Html.Awe().Form().FormClass("cfgForm").Url(Url.Action("GridContent")).Success("placeGrid")
+    
+    <div id="gridContent">
+    @Html.Partial("GridContent")
+        </div>
+    
+    <script>
+        function placeGrid(result) {
+            $('#gridContent').html(result);
+        }
+    </script>
+    <br/>
+    @Html.Source("GridShowHideColumnsDemo/GridContent.cshtml")
+

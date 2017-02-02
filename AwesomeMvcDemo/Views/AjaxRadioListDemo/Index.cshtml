@@ -1,0 +1,201 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.AjaxDropdownDemoInput
+@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "AjaxRadioList, Cascading RadioButtonList ";
+}
+<h3>AjaxRadioList</h3>
+<div class="expl">AjaxRadioList needs an url, js func or controller to get data from, it will render a list of radiobuttons</div>
+
+<h3>Cascading Radio button list using binding to Parent:</h3>
+@*begin*@
+
+@(Html.Awe().AjaxRadioListFor(o => o.ParentCategory)
+                 .Url(Url.Action("GetCategories", "Data")))
+
+@(Html.Awe().AjaxRadioListFor(o => o.ChildMeal)
+                    .Url(Url.Action("GetMeals", "Data"))
+                    .Parent(o => o.ParentCategory, "categories"))
+@*end*@
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("AjaxRadioListDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/DataController.cs")</div>
+</div>
+
+<h3>Bound to many parents</h3>
+@*begin1*@
+@Html.Awe().AjaxCheckboxListFor(o => o.Categories).Url(Url.Action("GetCategories", "Data"))
+@(Html.Awe().AjaxRadioListFor(o => o.Category2)
+                 .Url(Url.Action("GetCategories", "Data")))
+
+@(Html.Awe().AjaxRadioListFor(o => o.ChildOfManyMeal)
+                 .Url(Url.Action("GetMeals", "Data"))
+                 .Parent(o => o.Categories, "categories")
+                 .Parent(o => o.Category2, "categories"))
+@*end1*@
+<div class="code">
+    @Html.Source("AjaxRadioListDemo/Index.cshtml", 1)
+</div>
+
+<h3>Mods</h3>
+Mods are custom js functions that you can create to modify the look and behaviour of the control.
+@*begin2*@
+<h4>ButtonGroup</h4>
+@(Html.Awe().AjaxRadioList("CategoriesButtonGroup")
+            .ButtonGroup()
+            .Url(Url.Action("GetCategories", "Data")))
+
+<div class="epanel lrgf">
+    <h4>Cascading Odropdowns</h4>
+    @(Html.Awe().AjaxRadioList("CatOdropdown")
+          .Odropdown() // using custom extension that sets .Mod
+          .Url(Url.Action("GetCategories", "Data")))
+
+    @(Html.Awe().AjaxRadioList("MealsOdropdown")
+          .Odropdown()
+          .Url(Url.Action("GetMeals", "Data"))
+          .Parent("CatOdropdown", "categories"))
+
+    <h4>Odropdown with many items, automatically gets search</h4>
+    @(Html.Awe().Odropdown("AllMealsOdropdown")
+          .Url(Url.Action("GetAllMeals", "Data")))
+
+    <h4>Color dropdown</h4>
+    @(Html.Awe().AjaxRadioList("ColorPicker1")
+          .ColorDropdown(o => o.AutoSelectFirst()))
+
+    <h4>Image dropdown</h4>
+    @(Html.Awe().AjaxRadioList("ImgDropdown")
+          .Url(Url.Action("GetFruits", "Data"))
+          .ImgDropdown(o => o.AutoSelectFirst()))
+
+    <h4>Combobox</h4>
+    @(Html.Awe().AjaxRadioList("AllMealsCombo")
+          .Value("hi there")
+          .Combobox()
+          .Url(Url.Action("GetAllMeals", "Data")))
+
+    <h4>TimePicker</h4>
+    @Html.Awe().AjaxRadioList("TimePicker1").TimePicker(o => o.Caption("time please").Step(15))
+</div>
+
+@*end2*@
+
+<div class="tabs code">
+    <div data-caption="description" class="expl">
+        Extending the behaviour of the AjaxRadioList using mods. The new components have the same features as the AjaxRadioList but render (look) differently
+        and have additional properties which can be specified inside the Extension Method (e.g. .Odropdown(o => o.Caption("please select")) )
+    </div>
+    <div data-caption="view">@Html.Source("AjaxRadioListDemo/Index.cshtml", 2)</div>
+</div>
+
+<br />
+
+<h2>Odropdown with remote search</h2>
+@*beginrs*@
+<div class="epanel lrgf">
+    @(Html.Awe().AjaxRadioList("RemoteSearchOdropdown")
+          .Odropdown(o => o.SearchFunc("utils.osearch", Url.Action("SearchMeals", "Data"), "m1"))
+          .Value(197)
+          .Url(Url.Action("GetMealsInit", "Data")))
+
+    @(Html.Awe().AjaxRadioList("RemoteSearchCombobox")
+          .Combobox(o => o.SearchFunc("utils.osearch", Url.Action("SearchMeals", "Data"), "m1"))
+          .Value(197)
+          .Url(Url.Action("GetMealsInit", "Data"))) <span class="hint">try 'o'</span>
+
+    <br />
+    <br />
+
+    @(Html.Awe().AjaxRadioList("GitRepoOdropdown")
+          .Odropdown(o => o.SearchFunc("gitRepoSearch", key:"g").Caption("select a git repo").ItemFunc("gitItem").CaptionFunc("gitCaption"))
+          .Load(false)) <span class="hint">try 'valueinjecter'</span>
+    <br />
+    <br />
+</div>
+    @(Html.Awe().AjaxCheckboxList("GitRepoMultiselect")
+          .Multiselect(o => o.SearchFunc("gitRepoSearch", key: "g").Caption("select a git repo").ItemFunc("gitItem").CaptionFunc("gitCaption"))
+          .Load(false))
+
+@*gitRepoSearch, gitItem, gitCaption functions in Site.js*@
+@*endrs*@
+<div class="tabs code">
+    <div data-caption="description" class="expl">
+        Only a few items + the selected one are loaded initially using the url specified in .Url, but when the user types something in the searchbox more items
+        are loaded by executing the specified .SearchFunc; the new loaded items will be stored/cached until a load will occur, e.g. when a parent changes it's value the component will load.
+        <br />
+        Components with the same cache key ("m1", "g") have a shared cache.
+    </div>
+    <div data-caption="view">@Html.Source("AjaxRadioListDemo/Index.cshtml", "rs")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/DataController.cs", "rso")</div>
+</div>
+<br/>
+<h4>Bootstrap dropdown mod</h4>
+
+@(Html.Awe().AjaxRadioList("CatBootDd")
+            .Mod("awem.bootstrapDropdown")
+            .Url(Url.Action("GetCategories", "Data")))
+
+@(Html.Awe().AjaxRadioList("MealsBootDd")
+            .Mod("awem.bootstrapDropdown")
+            .Parent("CatBootDd", "categories")
+            .Url(Url.Action("GetMeals", "Data")))
+
+@*beginsv*@
+<h3>Set value from get items call</h3>
+@(Html.Awe().AjaxRadioList("CategorySv")
+        .Odropdown(o => o.AutoSelectFirst())
+        .Url(Url.Action("GetCategories", "Data")))
+
+@(Html.Awe().AjaxRadioList("MealsSv")
+      .Parent("CategorySv", "categories")
+      .Url(Url.Action("GetMealsSetValue2", "Data")))
+@*endsv*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("AjaxRadioListDemo/Index.cshtml", "sv")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/DataController.cs", "sv")</div>
+</div>
+
+
+<h3>Using predefined parameters</h3>
+@{
+    var category1 = Db.Categories[0];
+}
+setting paremter parent = @category1.Name using .Parameter extension<br />
+@(Html.Awe().AjaxRadioListFor(o => o.Meal1)
+           .Parameter("categories", category1.Id)
+           .Url(Url.Action("GetMeals", "Data")))
+
+<h3>Events and Api</h3>
+<script>
+    $(function () {
+        $('#bApi').on('click', function () {
+            eval($('#vs').val());
+        });
+
+        $('#ApiMeal').on('aweload', function (e, data, rd) {
+            $('#log').prepend('aweload handled,\n data: ' + JSON.stringify(data) + "\n request data" + JSON.stringify(rd) + '\n\n');
+        }).on('awebeginload', function (e, data) {
+            $('#log').prepend('awebeginload handled,\n request data: ' + JSON.stringify(data) + '\n\n');
+        });
+    });
+</script>
+
+<div class="awe-il">
+    <textarea id="vs" cols="70" rows="7">
+        $('#ApiMeal').data('api').load({ params:{ text: 'ma' } });
+
+    </textarea><br />
+    <button id="bApi" class="awe-btn">Execute</button>
+</div>
+@(Html.Awe().AjaxRadioList("ApiMeal")
+            .Url(Url.Action("GetItems", "ApiMealAjaxDropdown")))
+<br />
+<br />
+<textarea id="log" rows="7" style="width: 100%">
+    logging events
+</textarea>
+
+
+
+

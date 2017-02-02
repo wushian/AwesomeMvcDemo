@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Multiple level cascading demo using Ajax Dropdown, Radiolist and Checkboxlist";
+}
+@*begin*@
+<h2>Multiple level cascading demo</h2>
+available items = [3, 7, 10] + parent value (or sum in case multiple parents)
+    <br />
+<br />
+
+@Html.Awe().AjaxDropdown("a").Url(Url.Action("GetNumbers", "Data"))
+@Html.Awe().AjaxDropdown("b").Url(Url.Action("GetNumbers", "Data")).Parent("a")
+@Html.Awe().AjaxDropdown("c").Url(Url.Action("GetNumbers", "Data")).Parent("b")
+
+<br />
+<br />
+
+@Html.Awe().AjaxRadioList("a1").Url(Url.Action("GetNumbers", "Data"))
+@Html.Awe().AjaxCheckboxList("b1").Url(Url.Action("GetNumbers", "Data")).Parent("a1")
+@Html.Awe().AjaxRadioList("c1").Url(Url.Action("GetNumbers", "Data")).Parent("b1")
+@Html.Awe().AjaxRadioList("d1").Url(Url.Action("GetNumbers", "Data")).Parent("b1").Parent("c1").Parent("a1")
+
+<br />
+<br />
+
+available items = parent value + [ "The", "brown", "cow", "is eating", "green", "grass"] 
+    <br />
+<br />
+@Html.Awe().AjaxDropdown("a3").Url(Url.Action("GetWords", "Data"))
+@Html.Awe().AjaxDropdown("b3").Url(Url.Action("GetWords", "Data")).Parent("a3")
+@Html.Awe().AjaxDropdown("c3").Url(Url.Action("GetWords", "Data")).Parent("b3")
+@Html.Awe().AjaxDropdown("d3").Url(Url.Action("GetWords", "Data")).Parent("c3")
+@Html.Awe().AjaxDropdown("e3").Url(Url.Action("GetWords", "Data")).Parent("d3")
+@Html.Awe().AjaxDropdown("f3").Url(Url.Action("GetWords", "Data")).Parent("e3")
+@*end*@
+<br />
+<br />
+<div class="tabs">
+    <div data-caption="view">@Html.Source("MultipleLevelCascadingDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/DataController.cs", "mlc")</div>
+</div>
+
+

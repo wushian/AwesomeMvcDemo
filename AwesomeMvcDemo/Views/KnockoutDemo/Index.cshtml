@@ -1,0 +1,155 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Knockout.js Demo";
+}
+
+<h2>Knockout.js Demo</h2>
+<br/>
+
+@*begin*@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.min.js"></script>
+
+<div class="awe-il">
+    <div data-bind="foreach: meals">
+        <p>
+            <input type="text" data-bind="value: Name, event: { change: $parent.itemChanged }" />
+            <button type="button" class="awe-btn" data-bind="click: $parent.deleteMeal">Delete</button>
+        </p>
+    </div>
+    <div>
+        <input type="text" placeholder="new meal" data-bind="value: newMeal" />
+        <button type="button" class="awe-btn" data-bind="click: addMeal">Add Meal</button>
+    </div>
+</div>
+<div class="awe-il vtop" style="margin-left: 1em;">
+    @(Html.Awe().AjaxRadioList("Meals").DataFunc("getKoData('meals', 'Id', 'Name')")
+          .HtmlAttributes(null, new { data_bind = "value: selectedMeal, event: { change: selMealChange } " }))
+    @(Html.Awe().AjaxRadioList("Meals2").DataFunc("getKoData('meals', 'Id', 'Name')").Odropdown()
+          .HtmlAttributes(null, new { data_bind = "value: selectedMeal, event: { change: selMealChange } " }))
+    @(Html.Awe().AjaxDropdown("Meals3").DataFunc("getKoData('meals', 'Id', 'Name')")
+          .HtmlAttributes(null, new { data_bind = "value: selectedMeal, event: { change: selMealChange } " }))
+    @(Html.Awe().AjaxRadioList("Meals4").DataFunc("getKoData('meals', 'Id', 'Name')").ButtonGroup()
+          .HtmlAttributes(null, new { data_bind = "value: selectedMeal, event: { change: selMealChange } " }))
+    <br/>
+    <br/>
+    @(Html.Awe().AjaxCheckboxList("MealsMulti2").DataFunc("getKoData('meals', 'Id', 'Name')")
+          .HtmlAttributes(null, new { data_bind = "value: selectedMultiMeals, event: { change: selMultiMealsChange } " }))
+    @(Html.Awe().AjaxCheckboxList("MealsMulti").DataFunc("getKoData('meals', 'Id', 'Name')").Multiselect()
+          .HtmlAttributes(null, new { data_bind = "value: selectedMultiMeals, event: { change: selMultiMealsChange } " }))
+</div>
+
+    <div><br /><div class="elabel">Selected meal</div><input type="text" data-bind="value: selectedMeal, event: { change: selMealChange }" /></div>
+    <div><br /><div class="elabel">Selected multi meals</div><input type="text" data-bind="value: selectedMultiMeals, event: { change: selMultiMealsChange }" /></div>
+<div>
+    <br />
+    <div class="elabel"></div>@(Html.Awe().TextBox("awetxt")
+          .HtmlAttributes(null, new { data_bind = "value: selectedMeal, event: { change: selMealChange }" })
+          .FormatFunc("utils.prefix('value is: ')")
+          .Numeric(o => o.Min(163).Step(2)))</div>
+
+ <div style="margin-top: 1em;">
+            @(Html.Awe().Grid("GridClientData")
+                  .DataFunc("getGridData")
+                  .Height(250)
+                  .Groupable(false)
+                  .Mod(o => o.PageInfo())
+                  .Persistence(Persistence.View)
+                  .Resizable(true)
+                  .Columns(
+                      new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+                      new Column { Bind = "Name" }))
+        </div>
+
+<script>
+    
+    function AppViewModel() {
+        var self = this;
+        var newCounter = 1000;
+        var meals = @Html.Raw(DemoUtils.Encode(Db.Meals.Where(o => o.Category == Db.Categories.First())));
+        
+        self.meals = ko.mapping.fromJS(meals);
+        self.selectedMeal = ko.observable(@Db.Meals[1].Id);
+        self.selectedMultiMeals = ko.observable(JSON.stringify(@Html.Raw(DemoUtils.Encode(new []{ Db.Meals[1].Id, Db.Meals[2].Id}))));
+        self.newMeal = ko.observable('');
+        
+        self.addMeal = function() {
+            self.meals.push(ko.mapping.fromJS({ Id: newCounter++, Name: self.newMeal() }));
+            self.newMeal('');
+        };
+
+        self.deleteMeal = function(row) {
+            self.meals.remove(row);
+        };
+
+        self.itemChanged = onItemsChange;
+        self.meals.subscribe(onItemsChange);
+        
+        function onItemsChange() {
+            var list = ko.mapping.toJS(self.meals);
+            renderEditors(list, ["Meals", "Meals2", "Meals3", "Meals4", "MealsMulti", "MealsMulti2"], "Id", "Name");
+            $('#GridClientData').data('api').load();
+            return true;
+        }
+        
+        self.selMealChange = function () {
+            var list = ko.mapping.toJS(self.meals);
+            renderEditors(list, ["Meals", "Meals2", "Meals3", "Meals4"], "Id", "Name");
+            $('#awetxt').data('api').render();
+            return true;
+        };
+        
+        self.selMultiMealsChange = function() {
+            var list = ko.mapping.toJS(self.meals);
+            renderEditors(list, ["MealsMulti", "MealsMulti2"], "Id", "Name");
+            return true;
+        };
+
+    }
+
+    var appvm = new AppViewModel();
+    
+    ko.applyBindings(appvm);
+    
+    function getGridData(gp) {
+        var g = utils.getGridParams(gp);
+
+        var meals = ko.mapping.toJS(appvm["meals"]);
+
+        // clone items to avoid grid sorting items in other editors
+        return utils.gridModelBuilder(this, g, meals, { key:"Id", forceSort: 1 });
+    }
+
+    // utility functions
+    function renderEditors(list, ids, kprop, cprop) {
+        $.each(ids, function(i, val) {
+            renderEditor(list, val, kprop, cprop);
+        });
+    }
+    
+    function renderEditor(list, id, kprop, cprop) {
+        var $editor = $('#' + id);
+        var o = $editor.data('o');
+        o.lrs = toKeyContent(list, kprop, cprop);
+        $editor.data('api').render(o);
+    }
+    
+    function toKeyContent(list, key, con) {
+        return $.map(list, function (o) { return { k: o[key], c: o[con] }; });
+    }
+    
+    function getKoData(collName, kprop, cprop) {
+        return function() {
+            return toKeyContent(ko.mapping.toJS(appvm[collName]), kprop, cprop);
+        };
+    }
+</script>
+@*end*@
+
+<div class="tabs">
+    <div data-caption="description" class="expl">
+    All helpers get data from the knockout application viewmodel by using the DataFunc extension. <br/>
+        The value of the editors and select items are synchronized using knockout data-bind attributes, events and the client side api of the editors $(#EditorId).data('api').render(o).<br/>
+    </div>
+    <div data-caption="view">@Html.Source("KnockoutDemo/Index.cshtml")</div>
+</div>

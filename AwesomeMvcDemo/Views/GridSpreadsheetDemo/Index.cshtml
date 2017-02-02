@@ -1,0 +1,141 @@
+﻿@{
+    ViewBag.Title = "Grid Spreadsheet Demo";
+}
+
+<h1>Grid Spreadsheet Demo</h1>
+The grid is used as an excel/google docs spreadsheet. ClientFormatFunc is set for each column to render a textbox for each cell, and some css to hide the borders of the textbox and make the cell look like one.
+    Once the js change event is triggered on the textbox an ajax request is sent to the server to save the value. The Id is not shown and is not editable, but it's used to identify the records when editing them.
+    <br />
+<br />
+Try and edit some cells, after switch pages/refresh broswer. Note you have to exit the cell or hit enter in order for the change to be persisted.
+<br/>
+<h2>Simple spreadsheet grid</h2>
+<div class="bar">
+    <button type="button" class="awe-btn" id="addrow">add row</button>
+</div>
+
+@*begin*@
+@(Html.Awe().Grid("Spreadsheet")
+                .Groupable(false)
+                .Sortable(false)
+                .Url(Url.Action("GridGetItems"))
+                .CssClass("spreadsh")
+                .Columns(
+                new Column { Bind = "Name", ClientFormatFunc = "txt" },
+                new Column { Bind = "Location", ClientFormatFunc = "txt" },
+                new Column { Bind = "Meal", ClientFormatFunc = "txt" }))
+<textarea id="log" class="log"></textarea>
+<script>
+    function txt(model, name) {
+        var val = model[name];
+        if (!val) val = ""; //replace null with ""
+        return "<input type='text' name='" + name + "' value='" + utils.escapeChars(val) + "'/>";
+    }
+
+    function add() {
+        var row = $('#Spreadsheet').data('api').renderRow({ Id: 0 });
+        var xhr = $('#Spreadsheet').data('api').load({ oparams: { page: 1 } }); // first go to page 1
+
+        $.when(xhr).done(function () {
+            $('#Spreadsheet .awe-row:first').before(row); // insert the row
+            row.find('input:first').focus();
+        });
+    }
+
+    $(function () {
+        $('#Spreadsheet').on('change', 'input', function () {
+            var model = $(this).closest('.awe-row').data('model');
+            var prop = $(this).attr("name");
+            model[prop] = $(this).val();
+
+            $.post('@(Url.Action("Save"))', { id: model.Id, name: prop, value: model[prop] }, function (res) {
+                if (model.Id == 0) {
+                    model.Id = res.Id;
+                    $('#log').prepend('new record added id = ' + res.Id + ' \n');
+                }
+                $('#log').prepend(model[prop] + ' saved \n');
+            }).fail(function (xhr) { awem.notif(xhr.responseText, 0, 'err'); });
+        });
+
+        $('#addrow').on('click', add);
+    });
+</script>
+
+<style>
+    .spreadsh .awe-row td
+    {
+        background: white;
+        padding: 0;
+        text-align: center;
+    }
+
+    .spreadsh input[type="text"]
+    {
+        width: 100%;
+        margin: auto;
+        border: none;
+        padding: 5px;
+        height: 27px;
+    }
+</style>
+@*end*@
+<br />
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("GridSpreadsheetDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/GridSpreadsheetDemoController.cs")</div>
+</div>
+<br/>
+<br/>
+<h2>Add columns and bound to array</h2>
+@*begin2*@
+<div class="bar">
+    @Html.Awe().Button().Text("add row").OnClick("add2()")
+    @Html.Awe().Button().Text("add column").OnClick("awe.oc('addCol')")
+</div>
+@Html.Awe().Grid("SpreadArrGrid").Url(Url.Action("MultiColGrid")).CssClass("spreadsh").Mod(o => o.ColumnsSelector()).SendColumns(true)
+@Html.Awe().InitCall("addCol").Url(Url.Action("AddColumn")).Success("utils.refreshGrid('SpreadArrGrid')")
+
+<script>
+    function txtVal(i) {
+        return function (model, name) {
+            var val = model.Values[i];
+            if (!val) val = ""; //replace null with ""
+            return "<input type='text' name='" + name + "' value='" + utils.escapeChars(val) + "'/>";
+        };
+    }
+
+    $(function () {
+        $('#SpreadArrGrid .awe-content').on('change', 'input', function () {
+            var model = $(this).closest('.awe-row').data('model');
+            var col = parseInt($(this).attr("name"));
+            var val = $(this).val();
+            model.Values[col] = val;
+
+            $.post('@(Url.Action("SaveArr"))', { id: model.Id, col: col, value: val }, function (res) {
+                if (!model.Values[0]) {
+                    model.Id = res.Id;
+                    $('#log').prepend('new record added id = ' + res.Id + ' \n');
+                }
+
+                $('#log').prepend(val + ' saved \n');
+            }).fail(function (xhr) { awem.notif(xhr.responseText, 0, 'err'); });
+        });
+    });
+
+    function add2() {
+        var row = $('#SpreadArrGrid').data('api').renderRow({ Id: 0, Values:[] });
+        $('#SpreadArrGrid .awe-row:last').after(row); // insert the row
+        $('#SpreadArrGrid').data('o').lrso = 1;
+        row.find('input:first').focus();
+    }
+</script>
+
+@*end2*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("GridSpreadsheetDemo/Index.cshtml", 2)</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/GridSpreadsheetDemoController.cs", 2)</div>
+</div>
+<br/>
+<br/>
+<a href="@Url.Action("Autocomplete")">Autocomplete Cells Spreadsheet Demo</a>

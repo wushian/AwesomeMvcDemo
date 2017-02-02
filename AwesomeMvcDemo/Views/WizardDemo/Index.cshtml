@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Wizard built using PopupForm";
+}
+<h3>Wizard Demo</h3>
+@*begin*@
+@(Html.Awe().InitPopupForm()
+                .Name("wizard1")
+                .Url(Url.Action("StartWizard"))
+                .Success("wizardFinish")
+                .UseDefaultButtons(false)
+                .Modal())
+<button type="button" onclick="awe.open('wizard1')" class="awe-btn mbtn">click here to start wizard</button>
+<br />
+<br />
+<script type="text/javascript">
+    function wizardFinish(res) {
+        alert(res.Message);
+    }
+</script>
+@*end*@
+
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        <p>
+            In this demo a Wizard is built using the PopupForm helper. 
+        We're not using the default Ok and Cancel buttons instead a submit button is placed on the bottom center of the form.
+        <br />
+            Stepping forward is done by submiting the form, the successful submit will redirect to another action which will return a view (html), 
+        when the popupform receives html/string it replaces its content with that html.<br />
+            Stepping back is performed by submitting a separate form to the needed step, the form uses method get.
+        (The popup form will handle any form that is being submited inside of it, and make it an ajax request).<br />
+        </p>
+    </div>
+    <div data-caption="view">@Html.Source("WizardDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Misc/WizardDemoController.cs")</div>
+    <div data-caption="step1 view">@Html.Source("WizardDemo/WizardStep1.cshtml")</div>
+    <div data-caption="step2 view">@Html.Source("WizardDemo/WizardStep2.cshtml")</div>
+    <div data-caption="finish view">@Html.Source("WizardDemo/WizardFinish.cshtml")</div>
+</div>
+
+
+

@@ -1,0 +1,10 @@
+﻿Popup with buttons, each button has a js function for the click event
+<br/>
+<button type="button" onclick="closeme(event)" class="awe-btn">close this popup</button>
+
+<script>
+    function closeme(e) {
+        $(e.target).closest('.awe-popup').data('api').close();
+        return false;
+    }
+</script>

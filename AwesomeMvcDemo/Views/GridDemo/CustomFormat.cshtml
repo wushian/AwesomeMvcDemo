@@ -1,0 +1,83 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridDemoCfgInput
+@{
+    ViewBag.Title = "Grid Custom Formatting Demo";
+}
+<h3>Grid Custom Formatting</h3>
+@*begin*@
+@(Html.Awe().Grid("CustomFormatGrid")
+                .Url(Url.Action("GetItems", "CustomFormatGrid"))
+                .Mod(o => o.ColumnsSelector())
+                .Persistence(Persistence.Session)
+                .Height(350)
+                .Columns(
+                new Column { Bind = "Person", ClientFormat = ".Person was at .Location" },
+                new Column { Bind = "Food", ClientFormat = "and had .Food", CssClass = "maro" },
+                new Column { Bind = "Price", ClientFormatFunc = "formatPrice", Width = 100 },
+                new Column { Bind = "Organic", ClientFormatFunc = "toggleButton", Width = 90 },
+                new Column { Bind = "Date" },
+                new Column { ClientFormatFunc = "useTemplate('template1')" },
+                new Column { ClientFormat = ".Person had .(Food)" }))
+
+<script type="text/javascript">
+    //custom checkbox using bootstrap-toggle plugin (http://www.bootstraptoggle.com)
+    $(function () {
+        $('#CustomFormatGrid').on('awerender', function () {
+            $(this).find(".checkbox-toggle").bootstrapToggle();
+        });
+    });
+
+    var toggleButton = function (model, prop) {
+        var checked = model[prop] ? 'checked = "checked"' : '';
+        return '<input type="checkbox" ' + checked + ' class="checkbox-toggle" data-toggle="toggle" data-on="Yes" data-off="No" data-size="small">';
+    };
+
+    function formatPrice(lunch, prop) {
+        var color = 'blue';
+        var price = lunch[prop];
+        if (price < 20) color = 'green';
+        if (price > 50) color = 'red';
+        return "<div style='color:" + color + ";text-width:bold;'>" + price + "£ </div>";
+    }
+
+    function useTemplate(id) {
+        return function (model) {
+            var str = $('#' + id).html();
+            for (var name in model) {
+                str = str.replace("." + name, model[name]);
+            }
+            return str;
+        };
+    }
+</script>
+<style>
+    .maro {
+        color: maroon;
+    }
+</style>
+<div id="template1" style="display: none">
+    .Person spent .Price £
+</div>
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+@*end*@
+<br />
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        Cell values can be evaluated on the client side using templates and js functions or on the server side using Map and setting a custom value (as shown here for the Date column).
+        The group header value can also be set on the server side, same applies for the footer.<br />
+        <br />
+        <ul>
+            <li>
+                <code>Column.ClientFormat</code> - Client format for the column defined as a string using .ModelPropertyName for including values of the row model,
+                if the ClientFormat starts with &lt;td then grid rendering wont wrap the cell value with td (the ones in format will be used instead),
+                this way additional html attributes can be added to the td tag (this attributes can contain .ModelProp)
+            </li>
+            <li>
+                <code>Column.ClientFormatFunc</code> - Defines the Name of a javascript function that will receive as a parameter the model (or mapped model) of the grid row and must return a string
+                which will be used a value for the cell
+            </li>
+        </ul>
+    </div>
+    <div data-caption="view">@Html.Source("GridDemo/CustomFormat.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/Grid/CustomFormatGridController.cs")</div>
+</div>

@@ -1,0 +1,94 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Client Load using .DataFunc extension Demo";
+}
+<h2>Client data loading demo</h2>
+
+loading controls using .DataFunc extension (js function) instead of .Url<br />
+if dataFunc is specified, the js function will be used to get data, however if that function returns -1 the url will be requested
+<br />
+<br />
+@*begin*@
+@{
+    var categories = Db.Categories;
+    var meals = Db.Meals;
+}
+@(Html.Awe().AjaxCheckboxList("list1")
+            .DataFunc("setCategoriesList")
+            .Value(new[] { categories[0].Id, categories[2].Id }))
+
+@(Html.Awe().AjaxDropdown("list3")
+                .DataFunc("setCategoriesList")
+                .Value(categories[3].Id))
+
+<h3>Cascading</h3>
+@(Html.Awe().AjaxRadioList("list2")
+                .DataFunc("setCategoriesList")
+                .Value(categories[2].Id))
+
+@(Html.Awe().AjaxCheckboxList("childList1")
+                .Parent("list2")
+                .DataFunc("setChildMealsList"))
+
+<h3>Hybrid </h3>
+<div class="expl">loading items from server on first load only</div>
+@(Html.Awe().AjaxDropdown("listRs")
+                .DataFunc("setCategoriesList")
+                .Value(categories[0].Id))
+
+@(Html.Awe().AjaxCheckboxList("childListRs")
+                 .Parent("listRs", "categories")
+                 .DataFunc("setChildListHybrid")
+                 .Url(Url.Action("GetMeals", "Data")))
+
+<script>
+    var categories = @Html.Raw(DemoUtils.Encode(categories));
+    var meals = @Html.Raw(DemoUtils.Encode(meals));
+
+    function setCategoriesList() {
+        var result = [];
+        $.each(categories, function(index, item) {
+            result.push({c: item.Name, k: item.Id });
+        });
+        return result;
+    }
+
+    function setChildMealsList(params) {
+        var pobj = utils.serializeObj(params);
+        var result = [];
+
+        $.each(meals, function(i, item) {
+            if(item.Category.Id == pobj.parent)
+                result.push({ c: item.Name, k: item.Id });
+        });
+        return result;
+    }
+
+    var lmeals;
+    function setChildListHybrid(params) {
+        var pobj = utils.serializeObj(params);
+        
+        function build() {
+            var result = [];
+            $.each(lmeals, function(i, item) {
+                if (item.Category.Id == pobj.categories)
+                    result.push({ c: item.Name, k: item.Id });
+            });
+            return result;
+        }
+
+        if (lmeals) {
+            return build();
+        } else {
+            return $.post('@Url.Action("GetMealsList", "Data")').then(function(items) {
+                lmeals = items;
+                return build();
+            });
+        }
+    }
+</script>
+@*end*@
+<br />
+<div class="code">
+    @Html.Source("ClientDataLoadingDemo/Index.cshtml")
+</div>

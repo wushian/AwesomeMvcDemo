@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "Grid show and hide columns using api";
+}
+<h2>Grid show and hide columns using api demo</h2>
+<p>There's also a grid mod that will add a columns selector to the grid, you can see it on the <a href="@Url.Action("Index", "Home")">home page</a></p>
+@*begin*@
+<div class="bar">
+    @(Html.Awe().AjaxCheckboxList("colSel")
+                 .DataFunc("getColumns")
+                 .Mod("awem.multiselb")
+                 .Tag(new { InLabel = "columns", NoSelClose = true })
+                 .Load(false))
+</div>
+@(Html.Awe().Grid("HideApiGrid")
+                .Columns(
+                    new Column { Bind = "Id", Width = 55, Groupable = false },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Location" },
+                    new Column { Bind = "Date", Width = 110 },
+                    new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+                    new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" }
+                )
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Persistence(Persistence.View)// save collapsed groups and nodes when switching between grid pages
+                .ColumnsPersistence(Persistence.Session) // save columns (width, visibility, etc..) for browser session lifetime
+                .SingleColumnSort(true)
+                .Resizable(true)
+                .Height(300)
+                .PageSize(10))
+<br />
+
+Using columns persistence type session, try hiding some columns and refresh the page (or go to another page and return). 
+    <script>
+        function getColumns() {
+            var result = [];
+            $.each($('#HideApiGrid').data('o').columns, function (i, col) {
+                result.push({ K: i, C: col.H });
+            });
+            return result;
+        }
+
+        $(function () {
+            var $grid = $('#HideApiGrid');
+            var $colSel = $('#colSel');
+
+            $grid.on('aweload', function () {
+                $colSel.data('api').load();
+
+                var values = [];
+                $.each($grid.data('o').columns, function (i, col) {
+                    if (!col.Hid) values.push(i);
+                });
+
+                $colSel.val(JSON.stringify(values)).data('api').render();
+            });
+
+            $colSel.on('change', function () {
+                var reload;
+
+                var colIndxs = $.parseJSON($(this).val() || "[]");
+                $.each($grid.data('o').columns, function (i, col) {
+                    if ($.inArray(i.toString(), colIndxs) == -1) {
+
+                        col.Hid = 1;//hide column
+                        if (col.Gd) {
+                            //remove grouped when hiding column
+                            col.Gd = 0;
+                            reload = 1;
+                        }
+                    } else {
+                        col.Hid = 0;
+                    }
+                });
+
+                var api = $grid.data('api');
+                if (reload)
+                    api.load();
+                else {
+                    api.persist();
+                    api.render();
+                }
+            });
+        });
+    </script>
+@*end*@
+<br />
+<div class="code">
+    @Html.Source("GridShowHideColumnsApiDemo/Index.cshtml")
+</div>
+
+

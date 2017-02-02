@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Master Details Demo using ASP.net MVC Awesome Grid and PopupForm";
+}
+<h2>Master Detail CRUD Demo using Grid and PopupForm</h2>
+This is a demo for master detail CRUD using the Grid.<br/>
+For master-detail grid see <a href="@Url.Action("Index", "GridNestingDemo")#Master-detail-grid">Master Detail Grid</a>, or <a href="@Url.Action("Index","GridNestingDemo")#Nested-grids--Hierarchy">Hierarchy (Nested Grids)</a>
+@*begin*@
+@Html.InitCrudPopupsForGrid("RestaurantGrid", "MasterDetailCrudDemo", 470)
+
+<div class="bar">
+    <button type="button" class="awe-btn mbtn" onclick="awe.open('createRestaurantGrid')">Create</button>
+</div>
+
+@(Html.Awe().Grid("RestaurantGrid")
+            .Height(350)
+            .Url(Url.Action("RestaurantGridGetItems"))
+            .Groupable(false)
+            .Columns(
+            new Column { ClientFormat = ".Id", Header = "Id", Width = 70 },
+            new Column { Bind = "Name" },
+            new Column { ClientFormat = GridUtils.EditFormatForGrid("RestaurantGrid"), Width = 50 },
+            new Column { ClientFormat = GridUtils.DeleteFormatForGrid("RestaurantGrid"), Width = 50 }))
+
+@*end*@
+
+<div class="tabs code">
+    <div data-caption="main view">@Html.Source("MasterDetailCrudDemo/Index.cshtml")</div>
+    <div data-caption="master create view">@Html.Source("MasterDetailCrudDemo/Create.cshtml")</div>
+    <div data-caption="detail create view">@Html.Source("AddressesGridCrud/Create.cshtml")</div>
+    <div data-caption="master crud controller">@Html.Csource("Demos/Grid/MasterDetailCrudDemoController.cs")</div>
+    <div data-caption="detail crud controller">@Html.Csource("Demos/Grid/AddressesGridCrudController.cs")</div>
+</div>
+
+<h2>Master Detail CRUD using in nest editing</h2>
+
+@*begin2*@
+@Html.InitCrudForGridNest("RestaurantGrid2", "MasterDetailCrudDemo")
+
+<div class="bar">
+    <button type="button" onclick="utils.nestCreate('RestaurantGrid2', 'createRestaurantGrid2')" class="awe-btn mbtn">Create</button>
+</div>
+
+@(Html.Awe().Grid("RestaurantGrid2")
+                .Url(Url.Action("RestaurantGridGetItems"))
+                .PageSize(15)
+                .Nests(
+                    new Nest { ButtonClass = "editnst", GetFunc = "utils.loadNestPopup('editRestaurantGrid2')" },
+                    new Nest { ButtonClass = "delnst", GetFunc = "utils.loadNestPopup('deleteRestaurantGrid2')" })
+                .Columns(
+                        new Column { ClientFormat = ".Id", Header = "Id", Width = 70 },
+                        new Column { Bind = "Name" },
+                        new Column { ClientFormat = GridUtils.EditGridNestFormat(), Width = 50 },
+                        new Column { ClientFormat = GridUtils.DeleteGridNestFormat(), Width = 50 }))
+@*end2*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("MasterDetailCrudDemo/Index.cshtml", 2)</div>
+</div>
+

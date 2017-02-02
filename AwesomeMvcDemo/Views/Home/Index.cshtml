@@ -1,0 +1,216 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Overview";
+}
+    <script>
+        var categories = @Html.Raw(DemoUtils.Encode(Db.Categories.Select(o => new KeyContent(o.Id, o.Name))));
+        var meals = @Html.Raw(DemoUtils.Encode(Db.Meals.Select(o => new KeyContent(o.Id, o.Name))));
+    </script>
+
+    <h4>Quick overview of the awesome helpers:</h4>
+    
+    <div class="ib" style="margin-right: 20px;">
+        <div class="efield">
+            <div class="elabel">
+                Lookup:
+            </div>
+            @Html.Awe().Lookup("Meal") 
+        </div>
+        <div class="efield">
+            <div class="elabel">
+                Multilookup:
+            </div>
+            @Html.Awe().MultiLookup("Meals")
+        </div>
+        <div class="efield">
+            <div class="elabel">
+                DatePicker:
+            </div>
+            @Html.Awe().DatePicker("Date1").ChangeMonth().ChangeYear() 
+        </div>
+        
+        <div class="efield">
+            <div class="elabel">
+                Textbox:
+            </div>
+    @(Html.Awe().TextBox("PriceUSD")
+          .Value("20")
+          .FormatFunc("utils.prefix('$')")
+          .Numeric(o => o.Decimals(2)))
+        </div>
+    </div>
+    <div class="ib">
+        <div class="ib">
+            @(Html.Awe().AjaxRadioList("Category2")
+                   .DataFunc("utils.getItems(categories)")
+                   .Value(Db.Categories[0].Id))
+        </div>
+        <div class="ib">
+            @(Html.Awe().AjaxCheckboxList("ChildMeals2")
+                   .Url(Url.Action("GetMeals","Data"))
+                   .Parent("Category2", "categories"))
+        </div>
+    </div>
+<div class="ib">
+    @(Html.Awe().AjaxDropdown("Category")
+          .DataFunc("utils.getItems(categories)"))
+
+    @(Html.Awe().AjaxDropdown("ChildMeal")
+          .Url(Url.Action("GetMeals","Data"))
+          .Parent("Category", "categories"))
+</div>
+    <br />
+    <br />
+    <p>mods applied, more details here: <a href="@Url.Action("Index","AjaxRadioListDemo")">AjaxRadioList</a>, <a href="@Url.Action("Index", "AjaxCheckboxListDemo")">AjaxCheckboxList</a>:</p>
+<div class="epanel">
+    <div class="lrgf">
+        @(Html.Awe().AjaxRadioList("AllMeals")
+          .Odropdown(o => o.AutoSelectFirst())
+          .DataFunc("utils.getItems(meals)"))
+
+        @(Html.Awe().AjaxRadioList("AllMealsCombo")
+          .Combobox()
+          .Value(Db.Meals[3].Id)
+          .DataFunc("utils.getItems(meals)"))
+
+        @(Html.Awe().AjaxRadioList("RemoteSearchOdropdown")
+          .Odropdown(o => o.SearchFunc("utils.osearch", Url.Action("SearchMeals", "Data")))
+          .Url(Url.Action("GetMealsInit", "Data")))
+    </div>
+
+    @(Html.Awe().AjaxRadioList("CategoriesButtonGroup")
+          .ButtonGroup()
+          .Value(Db.Categories[2].Id)
+          .DataFunc("utils.getItems(categories)"))
+
+    @Html.Awe().AjaxRadioList("TimePicker1").TimePicker(o => o.Caption("time").AutoSelectFirst())
+</div>
+    <br />
+@(Html.Awe().AjaxCheckboxList("AllMealsMulti")
+      .Multiselect(o => o.NoSelectClose())
+      .HtmlAttributes(new {style="width:300px;"})
+      .Value(new[]{ Db.Meals[2].Id, Db.Meals[3].Id, Db.Meals[5].Id})
+      .DataFunc("utils.getItems(meals)"))
+<br />
+<br />
+
+<div>
+    lookups simple and with custom search using dropdownPopup
+</div>
+<div class="chtop epanel">
+    @(Html.Awe().Lookup("MealLookupDropdown")
+          .Controller("MealLookup")
+          .Height(200)
+          .Mod(o => o.Dropdown()))
+
+    @(Html.Awe().MultiLookup("MealsMultiLookupDropdown")
+          .Controller("MealsMultiLookup")
+          .Height(200)
+          .Mod(o => o.Dropdown())) 
+
+    @(Html.Awe().Lookup("MealCustomSearch")
+          .CustomSearch()
+          .Mod(o => o.Dropdown()))
+    
+    <button type="button" class="awe-btn" onclick="awe.open('popupdd1', {}, event)">open dropdown popup</button>
+    @(Html.Awe().InitPopup()
+          .Name("popupdd1")
+          .Height(100)
+          .Width(200)
+          .Url(Url.Action("DropdownContent", "PopupDemo"))
+          .Mod(o => o.Dropdown())
+          .LoadOnce())
+</div>
+
+<br />
+    <br />
+Awesome Grid bound to 2 textboxes for search:
+    
+    @*begin1*@
+<div class="bar">
+    @Html.Awe().TextBox("txtperson").Placeholder("search for person ...").CssClass("searchtxt") 
+    @Html.Awe().TextBox("txtfood").Placeholder("search for food ...").CssClass("searchtxt")
+    @Html.Awe().AjaxRadioList("oCountry").Url(Url.Action("GetCountries", "Data")).Odropdown().HtmlAttributes(new { style = "min-width:15em;"})
+</div>
+
+    @(Html.Awe().Grid("Grid1")
+           .Reorderable()
+           .Mod(o => o.PageInfo().PageSize().AutoMiniPager().ColumnsSelector())
+           .Columns(
+               new Column{Bind = "Id", Width = 75, Groupable = false, Resizable = false},
+               new Column{Bind = "Person"}.Mod(o => o.Nohide()),
+               new Column{Bind = "Food"},
+               new Column{Bind = "Location"},
+               new Column{Bind = "Date", Width = 120}.Mod(o  => o.Autohide()),
+               new Column{Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country"}.Mod(o  => o.Autohide()),
+               new Column{Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef"}.Mod(o  => o.Autohide()))
+           .Url(Url.Action("GetItems", "LunchGrid"))
+           .Persistence(Persistence.Session) // save collapsed groups and nodes when switching between grid pages
+           .ColumnsPersistence(Persistence.Session) // save columns (width, visibility, etc..) for browser session lifetime
+           .Resizable()
+           .Height(350)
+           .Parent("txtperson","person")
+           .Parent("txtfood","food")
+           .Parent("oCountry", "country"))
+@*end1*@
+
+    <div class="tabs code">
+        <div data-caption="view">
+            @Html.Source("Home/Index.cshtml", 1) 
+        </div>
+        <div data-caption="controller">
+            @Html.Csource("Awesome/Grid/LunchGridController.cs") 
+        </div>
+    </div>
+    <br />
+    <br />
+    Grid and PopupForm used for CRUD operations, more details here: <a href="@Url.Action("Index", "GridCrudDemo")">Grid Crud Demo</a>
+    <br />
+    <br />
+    @*begin2*@
+    @Html.InitCrudPopupsForGrid("DinnersGrid","DinnersGridCrud") 
+
+    <div class="bar">
+        <div style="float: right;">
+            @Html.Awe().TextBox("txtSearch").Placeholder("search...").CssClass("searchtxt") 
+        </div>
+        <button type="button" onclick="awe.open('createDinnersGrid')" class="awe-btn mbtn">Create</button>
+    </div>
+
+    @(Html.Awe().Grid("DinnersGrid")
+           .Url(Url.Action("GridGetItems", "DinnersGridCrud"))
+           .Mod(o => o.ColumnsSelector().ColumnsAutohide())
+           .Parent("txtSearch","search")
+           .Height(350)
+           .Columns(
+               new Column{Bind = "Id", Width = 55},
+               new Column{Bind = "Name"}.Mod(o => o.NoAutohide()),
+               new Column{Bind = "Date"},
+               new Column{Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef"},
+               new Column{ClientFormat = ".Meals", Header = "Meals"},
+               new Column{ClientFormat = GridUtils.EditFormatForGrid("DinnersGrid"), Width = 50}.Mod(o => o.Nohide()),
+               new Column{ClientFormat = GridUtils.DeleteFormatForGrid("DinnersGrid"), Width = 50}.Mod(o => o.Nohide())))
+    @*end2*@
+
+<div class="code tabs">
+    <div data-caption="view">
+        @Html.Source("Home/Index.cshtml", 2)
+    </div>
+    <div data-caption="controller">
+        @Html.Csource("Demos/Grid/DinnersGridCrudController.cs")
+    </div>
+</div>
+<br/>
+<br/>
+<button type="button" class="awe-btn" onclick="awem.notif('Hi,</br> how are you ! ', 10000)">show notification</button>
+
+<br />
+<br />
+See also:
+<br/>
+<a href="@Url.Action("Index", "DragAndDropDemo")"> Drag And Drop Demo (grid move rows)</a><br/>
+<a href="@Url.Action("Index", "GridClientDataDemo")"> Grid Client Data Demo</a><br/>
+<a href="@Url.Action("Index", "GridNestingDemo")#In-nest-editing-grid">Grid In Nest Editing Demo</a><br/>
+@Html.ActionLink("Grid Inline Editing Demo", "Index", "GridInlineEditDemo")<br/>
+@Html.ActionLink("Master Detail Crud Demo", "Index", "MasterDetailCrudDemo")<br/>
+@Html.ActionLink("Wizard Demo", "Index", "WizardDemo")<br/>

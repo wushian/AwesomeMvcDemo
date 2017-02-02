@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Infinite scrolling / endless paging Grid";
+}
+<h2>Infinite scrolling</h2>
+Infinite scrolling functionality, added using custom js mod.
+    <br />
+<br />
+@*begin*@
+@(Html.Awe().Grid("InfiniteScrollingGrid")
+                .Mod(o => o.PageInfo().InfiniteScroll())
+                .Columns(
+                    new Column { Bind = "Id", Width = 55, Groupable = false, Resizable = false },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Location" },
+                    new Column { Bind = "Date", Width = 120 },
+                    new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+                    new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" })
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Resizable(true)
+                .Height(300)
+                .PageSize(20))
+@*end*@
+@Html.Source("GridInfiniteScrollingDemo/Index.cshtml", wrap: true)
+
+
+

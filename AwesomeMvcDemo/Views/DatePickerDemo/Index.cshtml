@@ -1,0 +1,68 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.DatePickerDemoInput
+@{
+    ViewBag.Title = "DatePicker Demo";
+}
+<h3>Simple DatePicker</h3>
+<div class="efield">
+    <div class="elabel">
+        Date:
+    </div>
+    <div class="einput">
+        @*begin*@
+        @Html.Awe().DatePickerFor(o => o.Date)
+        @*end*@
+    </div>
+
+    @Html.Source("DatePickerDemo/Index.cshtml")
+</div>
+<h3>With ChangeMonth and ChangeYear</h3>
+<div class="efield">
+    <div class="elabel">
+        Date:
+    </div>
+    <div class="einput">
+        @*begin1*@
+        @(Html.Awe().DatePickerFor(o => o.Date2)
+                    .ChangeMonth(true)
+                    .ChangeYear(true))
+        @*end1*@
+    </div>
+
+    @Html.Source("DatePickerDemo/Index.cshtml", "1")
+
+</div>
+<h3>Min, max, default date, clear button </h3>
+<div class="efield">
+    <div class="elabel">
+        Date:
+    </div>
+    <div class="einput">
+        @*begin2*@
+        @(Html.Awe().DatePickerFor(o => o.Date3)
+                        .MinDate(DateTime.Now.AddDays(1))
+                        .MaxDate(DateTime.Now.AddDays(7))
+                        .DefaultDate(DateTime.Now.AddDays(4))
+                        .ClearButton(true))
+        @*end2*@
+    </div>
+
+    @Html.Source("DatePickerDemo/Index.cshtml", "2")
+</div>
+
+<h3>Right to left </h3>
+
+@*begin3*@
+<div class="einput" style="direction: rtl;">
+    @Html.Awe().DatePickerFor(o => o.Date4)
+</div>
+@*end3*@
+
+@Html.Source("DatePickerDemo/Index.cshtml", "3")
+
+<h3>TimePicker</h3>
+
+@*begin4*@
+@Html.Awe().TimePicker("tmp1")
+@*end4*@
+
+@Html.Source("DatePickerDemo/Index.cshtml", "4")

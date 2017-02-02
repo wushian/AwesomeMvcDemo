@@ -1,0 +1,62 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Grid Client Data CRUD Demo";
+}
+
+<h2>Grid Client Data CRUD Demo</h2>
+
+@*begin*@
+@Html.InitCrudPopupsForGrid("DinnersGrid", "DinnersGridCrud")
+
+<div class="bar">
+    <div style="float: right;">
+        @Html.Awe().TextBox("txtSearch").Placeholder("search...").CssClass("searchtxt")
+    </div>
+    <button type="button" onclick="awe.open('createDinnersGrid')" class="awe-btn mbtn">Create</button>
+</div>
+
+@(Html.Awe().Grid("DinnersGrid")
+            .Mod(o => o.PageInfo().ColumnsSelector())
+            .DataFunc("getGridData")
+            //.Url(Url.Action("GridGetItems", "DinnersGridCrud"))
+            .Parent("txtSearch", "search")
+            .Height(350)
+            .Columns(
+                new Column { Bind = "Id", Width = 55 },
+                new Column { Bind = "Name" },
+                new Column { Bind = "Date" },
+                new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" },
+                new Column { ClientFormat = ".Meals", Header = "Meals" },
+                new Column { ClientFormat = GridUtils.EditFormatForGrid("DinnersGrid"), Width = 50 }.Mod(o => o.Nohide()),
+                new Column { ClientFormat = GridUtils.DeleteFormatForGrid("DinnersGrid"), Width = 50 }.Mod(o => o.Nohide())))
+@*end*@
+
+<script>
+    var dinners = @Html.Raw(DemoUtils.Encode(Db.Dinners.Select(o => new { o.Id, o.Name, o.Date, o.Chef,
+                 DateStr = o.Date.ToShortDateString(),
+                 ChefName = o.Chef.FirstName + " " + o.Chef.LastName,
+                 Meals = string.Join(", ", o.Meals.Select(m => m.Name))
+             })));
+
+    function getGridData(gp) {
+        var g = utils.getGridParams(gp);
+
+        function map(o) {
+             return { Id: o.Id, Name: o.Name, Date: o.DateStr, ChefName: o.ChefName, Meals: o.Meals };
+        }
+
+        function getItem() {
+        };
+
+        if (g.Key) {
+            return $.when($.post('@Url.Action("GetItem")', { id: g.Key })).then(function(result) {
+                getItem = function (){ return result[0]; }
+                return utils.gridModelBuilder(this, g, dinners, { key:"Id", map: map, getItem: getItem, ghval:{ Date: "DateStr" } });
+            });
+        }
+
+        return utils.gridModelBuilder(this, g, dinners, { key:"Id", map: map, getItem: getItem, ghval:{ Date: "DateStr" } });
+    }
+
+</script>
+<br />

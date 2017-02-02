@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "Error handling";
+}
+
+<h2>Error handling demo</h2>
+
+When a JavaScript error happens because of server error/incorrect url (500, 404) 
+    the only way you would know the reason is by using something like firebug/chrome dev tools 
+    (by looking in the console for the execution of ajax requests).
+    <br />
+<br />
+You can also assign a js function to the <code>awe.err</code>, 
+    this way whenever an error will occur your custom function will be executed (this code is called in utils.init).
+    @Html.SourceJs("utils.js")
+<br />
+clicking on this popup links will throw a server exception, click on them to see how it's handled
+    <br />
+
+@Html.Awe().InitPopupForm().Name("popupForm1").Url(Url.Action("ShowPopupForm"))
+@Html.Awe().InitPopup().Name("popup1").Url(Url.Action("ShowPopup"))
+
+<button type="button" onclick="awe.open('popup1')" class="awe-btn">open popup</button>
+
+<button type="button" onclick="awe.open('popupForm1')" class="awe-btn">open popupform</button>
+
+

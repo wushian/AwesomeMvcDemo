@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.Title = "Drag and Drop demo";
+}
+
+<h1>Drag and Drop demo</h1>
+<div class="expl">
+    on touch you can scroll the grids with movable rows by touching from the right or left side of the grid
+</div>
+<h2>Grid reorder rows</h2>
+
+<br />
+@*begin1*@
+@(Html.Awe().Grid("GridReord")
+      .Url(Url.Action("MealsGrid", "Data"))
+      .Mod(o => o.MovableRows())
+      .Height(300)
+      .Paging(false)
+      .Groupable(false)
+      .Sortable(false)
+      .Columns(
+          new Column { Bind = "Id", Width = 100 },
+          new Column { Bind = "Name", Width = 200 },
+          new Column { Bind = "Description" }.Mod(o => o.Autohide())))
+<br />
+<button type="button" onclick="getIds()" class="awe-btn">get ids</button>
+<div id="log" class="log"></div>
+
+<script>
+    $(function () {
+        $('#GridReord').on('awerowmove', function (e, $row, prevIndx) {
+            $('#log').prepend('<p>' + $row.data('model').Name + ' moved from ' + prevIndx + ' to ' + $row.index());
+        });
+    });
+
+    function getIds() {
+        var ids = $('#GridReord').find('.awe-row').map(function (i, el) { return $(el).data('k'); }).get();
+        $('#log').html(JSON.stringify(ids));
+    }
+</script>
+@*end1*@
+<div class="code">
+    <div data-caption="view">
+        @Html.Source("DragAndDropDemo/Index.cshtml", 1)
+    </div>
+</div>
+
+
+<h2>From one grid to another</h2>
+@*begin2*@
+<div class="frame">
+    <script>
+        var selected = [];
+
+        // used by the grids to tell the server which items to include/exclude
+        function getSelected() {
+            return { selected: selected };
+        }
+
+        $(function () {
+            $('#MealsGrid1, #MealsGrid2').on('awerowmove', function (e, $row, prevIndx, fromCont) {
+                $('#log').prepend('<p>' + $row.data('model').Name + ' moved from ' + fromCont.closest('.awe-grid').attr('id') + ' to ' + $row.closest('.awe-grid').attr('id'));
+                selected = $('#MealsGrid2').find('.awe-row').map(function (i, el) { return $(el).data('k'); }).get();
+            });
+        });
+    </script>
+
+    @(Html.Awe().Grid("MealsGrid1")
+          .Url(Url.Action("MealsGridSrc"))
+          .Mod(o => o.MovableRows("MealsGrid1", "MealsGrid2").ColumnsSelector())
+          .Height(200)
+          .Paging(false)
+          .ParameterFunc("getSelected")
+          .Groupable(false)
+          .Columns(
+              new Column { Bind = "Id", Width = 100 },
+              new Column { Bind = "Name", Width = 200 },
+              new Column { Bind = "Description" }.Mod(o => o.Autohide())))
+    <br />
+    <br />
+    @(Html.Awe().Grid("MealsGrid2")
+          .Url(Url.Action("MealsGridSel"))
+          .Mod(o => o.MovableRows("MealsGrid1", "MealsGrid2").ColumnsSelector())
+          .Height(200)
+          .Paging(false)
+          .ParameterFunc("getSelected")
+          .Groupable(false)
+          .Columns(
+              new Column { Bind = "Id", Width = 100 },
+              new Column { Bind = "Name", Width = 200 },
+              new Column { Bind = "Description" }.Mod(o => o.Autohide())))
+</div>
+@*end2*@
+<div class="tabs code">
+    <div data-caption="view">
+        @Html.Source("DragAndDropDemo/Index.cshtml", 2)
+    </div>
+    <div data-caption="controller">
+        @Html.Csource("Demos/Grid/DragAndDropDemoController.cs")
+    </div>
+</div>
+<h2>Simple drag and drop demo</h2>
+
+@*begin3*@
+<div class="divA">
+    <p>drag source</p>
+    <div class="dragItem">abc</div>
+    <div class="dragItem">abc</div>
+    <div class="dragItem">abc</div>
+</div>
+<br />
+<div class="divB">
+    <p>drop target</p>
+</div>
+
+<script>
+    $(function () {
+        var $divB = $('.divB');
+        var $divA = $('.divA');
+
+        function dropFunc($cont) {
+            return function (dragObj) {
+                dragObj.appendTo($cont);
+            }
+        }
+
+        function hoverFunc($cont) {
+            return function(){
+                $cont.addClass('awe-highlight');
+            }
+        }
+
+        function resetHover() {
+            $divB.removeClass('awe-highlight');
+            $divA.removeClass('awe-highlight');
+        }
+
+        awem.dragAndDrop({
+            from: $divA,
+            sel: '.dragItem',
+            to: [{ c: $divB, drop: dropFunc($divB), hover: hoverFunc($divB) }],
+            reshov: resetHover,
+            hide: 1
+        });
+
+        awem.dragAndDrop({
+            from: $divB,
+            sel: '.dragItem',
+            to: [{ c: $divA, drop: dropFunc($divA), hover: hoverFunc($divA) }],
+            reshov: resetHover,
+            hide: 1
+        });
+    });
+</script>
+
+
+<style>
+    .divA, .divB {
+        border: 1px solid gray;
+        height: 100px;
+        padding: 5px;
+    }
+
+    .dragItem {
+        display: inline-block;
+        background: gray;
+        color: white;
+        padding: 2px;
+        border-radius: 2px;
+        cursor: default;
+        margin-right: 5px;
+    }
+</style>
+@*end3*@
+<div class="tabs code">
+    <div data-caption="view">
+        @Html.Source("DragAndDropDemo/Index.cshtml", 3)
+    </div>
+</div>

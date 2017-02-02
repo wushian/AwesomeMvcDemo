@@ -1,0 +1,20 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridDemoGroupingCfgInput
+
+@(Html.Awe().Grid("GroupingGrid")
+      .Columns(new[]{
+          new Column{Bind = "Id", Width = 55},
+          new Column{Bind = "Person", Group = Model.PersonGrouped, 
+              GroupRemovable = Model.PersonRem, Groupable = Model.PersonGroupable, GroupRank = Model.PersonRank},
+          new Column{Bind = "Food",  Group = Model.FoodGrouped, 
+              GroupRemovable = Model.FoodRem, Groupable = Model.FoodGroupable, GroupRank = Model.FoodRank},
+          new Column{Bind = "Date", Width = 180},
+          new Column{Bind = "Price", Width = 80},
+          new Column{Bind = "Location"},
+          new Column{Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef", FooterClientFormat = ".ChefCount"}
+      })
+      .Height(450)
+      .ShowGroupBar(Model.ShowGroupBar)
+      .Groupable(Model.Groupable)
+      .ShowGroupedColumn(Model.ShowGroupedColumn)
+      .Parameter("collapsed", Model.Collapsed)
+      .Url(Url.Action("GetItems","GroupingGrid")))

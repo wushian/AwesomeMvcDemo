@@ -1,0 +1,131 @@
+﻿@using System.Threading
+@using System.Web.Optimization
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - ASP.net MVC Awesome Demo</title>
+    <link rel="shortcut icon" href="@Url.Content("~/f.ico")" type="image/x-icon" />
+    @{
+        var settings = SettingsController.ReadSettings(HttpContext.Current.Request);
+    }
+
+    <link href="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+    <link href="@Url.Content("~/Content/themes/" + settings.Theme + "/AwesomeMvc.css")?v=73" rel="stylesheet" type="text/css" id="aweStyle" />
+    <link href="@Url.Content("~/Content/themes/" + settings.Theme + "/awem.css")?v=73" rel="stylesheet" type="text/css" id="modsStyle" />
+    <link href="@Url.Content("~/Content/Common.css")?v=73" rel="stylesheet" type="text/css" />
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    @*jquery needs to be at the top*@
+</head>
+<body class="@settings.Theme">
+    <div id="header">
+        <div class="page">
+            <ul class="menu">
+                <li style="margin: 0;">
+                    <a href="@Url.Action("Index", "Home")" id="btnLogo">
+                        <span class="logo"></span>
+                    </a>
+                </li>
+                <li>
+                    <button type="button" id="btnMenuToggle" class="" style="margin-bottom: 5px;">
+                        <span class="iconGuide"></span>
+                        <i class="caret guideCaret"></i>
+                    </button>
+                </li>
+                <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+                <li><a href="@Url.Action("Index", "Sitemap")">All</a></li>
+                <li><a href="@Url.Action("About", "Home")">About</a></li>
+            </ul>
+            <div class="sharebox">
+                @(Html.Awe().AjaxRadioList("ddlDownloads")
+                      .DataFunc("utils.getItems(downloadLinks)")
+                      .MenuDropdown(o => o.Caption("Downloads").PopupClass("downlMenu")))
+            </div>
+        </div>
+    </div>
+    <div class="page">
+        <div id="main" style="clear: both;">
+            @*begin*@
+            <div id="demoMenu">
+                @{
+                    var action = ViewContext.Controller.ValueProvider.GetValue("action").RawValue.ToString();
+                    var controller = ViewContext.Controller.ValueProvider.GetValue("controller").RawValue.ToString();
+                }
+                @Html.Awe().TextBox("msearch").Placeholder("search...").CssClass("msearch")
+                @(Html.Awe().Grid("Menu")
+                      .DataFunc("getMenuGridFunc()")
+                      .Tag(new { ItemsUrl = Url.Action("GetMenuNodes", "Data") })
+                      .ShowGroupBar(false)
+                      .ShowHeader(false)
+                      .ShowFooter(false)
+                      .Persistence(Persistence.Local)
+                      .Parameter("controller", controller)
+                      .Parameter("action", action)
+                      .Parent("msearch", "search", false)
+                      .RowClassClientFormat(".Selected")
+                      .ColumnWidth(100)
+                      .Columns(new Column { ClientFormatFunc = "renderMenuItem" }))
+            </div>
+            <script>
+                $(function () {
+                    $('#msearch').keyup(function () {
+                        $('#Menu').data('api').load();
+                    });
+                });
+            </script>
+            @*end*@
+            <div id="demoPage">
+                <div class="awe-il settings">
+                    @Html.Action("Index", "Settings")
+                </div>
+                <div>
+                    @RenderBody()
+                    <br />
+                    <br />
+                    <br />
+                    <br style="clear: both;" />
+                </div>
+            </div>
+            <br style="clear: both;" />
+        </div>
+        <div id="footer">
+            see also: <a href="http://prodinner.aspnetawesome.com" title="uses EF, SQL Server Db">ProDinner Demo</a>
+        </div>
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js" type="text/javascript"></script>
+
+    @Scripts.Render("~/bundle/Scripts/js")
+
+    <script>
+        var isMobileOrTablet = '@MobileUtils.IsMobileOrTablet()' === "True";
+        var dateFormat = '@AweUtil.ConvertTojQueryDateFormat(Thread.CurrentThread.CurrentCulture.DateTimeFormat.ShortDatePattern)';
+        var decimalSep = '@Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator';
+
+        awem.isMobileOrTablet = function () { return isMobileOrTablet; };
+        utils.init(dateFormat, isMobileOrTablet, decimalSep);
+
+        // rest is specific to this demo (don't copy it)
+        var root = '@Url.Content("~")';
+        var popupMod = '@settings.PopupMod';
+        setAweDemoPopup();
+        $(function () { documentReady(root); });
+    </script>
+
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/mvc/5.1/jquery.validate.unobtrusive.min.js" type="text/javascript"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+    <script type='text/javascript'>
+        $.fn.bootstrapBtn = $.fn.button.noConflict();
+    </script>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,72 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.LookupDemoCfgInput
+@{
+    ViewBag.Title = "Lookup helper";
+}
+
+<h3>Lookup</h3>
+<div class="csettings">
+    <form action="@Url.Action("IndexContent","LookupDemo")" method="post" class="ConfigForm">
+        <label>
+            ClearButton:
+            @Html.Awe().CheckBoxFor(o => o.ClearButton)
+        </label>
+        <label>
+            HighlightChange:
+            @Html.Awe().CheckBoxFor(o => o.HighlightChange)
+        </label>
+        <label>
+            Fullscreen:
+            @Html.Awe().CheckBoxFor(o => o.Fullscreen)
+        </label>
+        <label>
+            Popup Height:
+            @Html.Awe().TextBoxFor(o => o.Height).Numeric().MaxLength(3)
+        </label>
+        <label>
+            Popup Width:
+            @Html.Awe().TextBoxFor(o => o.Width).Numeric().MaxLength(3)
+        </label>
+        <br />
+        <input type="submit" value="change settings" class="awe-btn awe-il mbtn" />
+    </form>
+</div>
+
+<div id="demoContent">
+    @Html.Partial("IndexContent")
+</div>
+<br />
+
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        <p>
+            Lookup needs a controller or urls to be specified, by default convention the lookup
+            will look for a controller with the same name as it + "LookupController"<br />
+        </p>
+        <ul>
+            <li>
+                <code>action GetItem</code> - used to show the value in the readonly field, it will
+                receive a <code>v</code> parameter which is going to be the key of the selected item
+            </li>
+            <li>
+                <code>action Search</code> - gets data for the search result in it's popup, it should
+                return a <code>Json(AjaxListResult)</code>, so it has same features as the AjaxList (table layout,
+                custom item template)
+            </li>
+        </ul>
+    </div>
+    <div data-caption="view">@Html.Source("LookupDemo/IndexContent.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/Lookup/MealLookupController.cs")</div>
+</div>
+
+@Html.Awe().Form().FormClass("ConfigForm").Success("setContent")
+<script type="text/javascript">
+    function setContent(o) {
+        if ($('#Meal-awepw').length) {
+            $('#Meal-awepw').data('api').close();
+        }
+
+        $('#demoContent').html(o).addClass('awe-changing').removeClass('awe-changing', 1000);
+    }
+</script>
+
+

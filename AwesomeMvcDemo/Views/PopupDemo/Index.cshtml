@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "ASP.net MVC Awesome Popup Demo";
+}
+<h3>Popup</h3>
+<div class="expl">
+    It is initialized using <code>Html.Awe().InitPopup()</code> and after opened using <code>awe.open</code> js function.
+</div>
+<br />
+There's also the <a href="@Url.Action("Index", "PopupFormDemo")">PopupForm</a> helper which is used in all of the Crud demos
+(<a href="@Url.Action("Index", "GridCrudDemo")">Grid</a>, <a href="@Url.Action("Index", "Dinners")">AjaxList</a>),
+also in the <a href="@Url.Action("Index","WizardDemo")">Wizard Demo</a>,
+the PopupForm handles form posts that happen inside it
+and has 2 buttons by default (OK, Cancel).
+
+<h3>Initialize and open popup on button click </h3>
+@*begin1*@
+@(Html.Awe().InitPopup()
+        .Name("popup1")
+        .Url(Url.Action("Meals"))
+        .LoadOnce()
+        .Title("meals list popup")
+        .Width(500)
+        .Height(450))
+
+<button type="button" onclick='awe.open("popup1")' class="awe-btn">Open Popup</button>
+
+@*end1*@
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("PopupDemo/Index.cshtml", 1)</div>
+    <div data-caption="controller">@Html.Csource("Demos/Helpers/PopupDemoController.cs", 1)</div>
+    <div data-caption="popup view">@Html.Source("PopupDemo/Meals.cshtml", 1)</div>
+</div>
+
+<h3>DropdownPopup Mod</h3>
+@*begin4*@
+@(Html.Awe().InitPopup()
+        .Name("popupdd1")
+        .Url(Url.Action("DropdownContent"))
+        .LoadOnce()
+        .Title("meals list popup")
+        .Mod(o => o.Dropdown())
+        .Width(300))
+
+<button type="button" class="awe-btn" onclick="awe.open('popupdd1', {}, event)">open dropdown popup</button>
+<button type="button" class="awe-btn" onclick="awe.open('popupdd1', {}, event)">open dropdown popup</button>
+@*end4*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("PopupDemo/Index.cshtml", 4)</div>
+    <div data-caption="controller">@Html.Csource("Demos/Helpers/PopupDemoController.cs", 3)</div>
+    <div data-caption="popup view">@Html.Source("PopupDemo/DropdownContent.cshtml")</div>
+</div>
+
+<h3>Sending client side paramters to server on content load</h3>
+
+Value sent to the server action that returns the popup's content:
+@*begin2*@
+<input type="text" id="txtParam1" value="abc" />
+
+<br />
+
+@(Html.Awe().InitPopup()
+            .Name("PopupParams")
+            .Url(Url.Action("PopupWithParameters"))
+            .Parent("txtParam1")
+            .Parameter("p1", 15)
+            .ParameterFunc("giveParams"))
+
+<button type="button" class="awe-btn" onclick="awe.open('PopupParams', { params: { id: 123 } })">Open Popup</button>
+
+<script>
+    function giveParams() {
+        return { a: "hi", b: "how are you" };
+    }
+</script>
+@*end2*@
+<div class="code tabs">
+    <div data-caption="view">@Html.Source("PopupDemo/Index.cshtml", 2)</div>
+    <div data-caption="controller">@Html.Csource("Demos/Helpers/PopupDemoController.cs", 2)</div>
+    <div data-caption="popup view">@Html.Source("PopupDemo/PopupWithParameters.cshtml")</div>
+</div>
+
+<h3>Full screen popup</h3>
+@*begin5*@
+@(Html.Awe().InitPopup()
+            .Name("pfulls")
+            .Fullscreen(true)
+            .Content("hi, try resizing the browser window"))
+
+<button class="awe-btn" onclick="awe.open('pfulls')">Open</button>
+@*end5*@
+
+@Html.Source("PopupDemo/Index.cshtml", "5", wrap: true)
+<h3>Buttons</h3>
+
+@*begin3*@
+<div id="p3Cont"></div>
+@(Html.Awe().InitPopup().Name("p3")
+                .Button("Add Hi", "addHi")
+                .Button("Say Hi", "sayHi")
+                .Button("Close", "closePopup")
+                .Url(Url.Action("PopupBtns"))
+                .Close("onClose")
+      .Tags("p3Cont") /* used by the inline popup only */)
+
+<button type="button" class="awe-btn" onclick="awe.open('p3')">Open popup with buttons</button>
+<script type="text/javascript">
+    function closePopup() {
+        $(this).data('api').close();
+    }
+
+    function sayHi() {
+        alert('hi');
+    }
+
+    function addHi() {
+        $(this).prepend('<p>hi</p>');
+    }
+
+    function onClose() {
+        alert('popup was closed');
+    }
+
+</script>
+@*end3*@
+<div class="code">
+    @Html.Source("PopupDemo/Index.cshtml", 3)
+</div>
+
+<h3>Mods</h3>
+By default the awesome popup is used for the popup, but this can be changed by setting the awe.popup. 
+    You may choose to use just one or multiple popup mods.
+    In the top right corner you can see a dropdown that allows you to change the current popup mod, 
+    this dropdown changes the value of popupMod variable which is used in the following code:
+
+    @Html.SourceJs("Site.js", "popup")
+o.tag.Inline is necessary for Grid in nest editing demo, if you set .Tag(new{Inline = true}) the inline popup will be used regardless of popupMod value.<br />
+
+    <h3>Autosize </h3>
+Open any popup and try resizing the browser (try to make it smaller than the popup), works for popups from other helpers as well.
+
+    <h3>Notes</h3>
+When there is more Popup helpers declared that have the same <code>.Name(string)</code>,
+     they will share the same popup window, so opening one will close the other; 
+    if you need to have popups with different names to share the same popup window use <code>.Group(string)</code>.

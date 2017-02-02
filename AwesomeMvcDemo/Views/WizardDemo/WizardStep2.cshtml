@@ -1,0 +1,24 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.Wizard.Step2Model
+<div class="wizardForm">
+    <div id="wizardData" style="height: 200px;">
+        @using (Html.BeginForm())
+        {
+            <div>good, now select a meal</div>
+
+            @Html.EditorFor(o => o.CategoryId)
+            @Html.EditorFor(o => o.MealIds)
+        }
+    </div>
+    <div>
+        <div style="float: left; margin-right: -100px;">
+            @using (Html.BeginForm("WizardStep1", null, new { Model.WizardId }, FormMethod.Get))
+            {
+                <input type="submit" value="Go back" class="awe-btn mbtn" style="width: 100px;" />
+            }
+        </div>
+
+        <div style="text-align: center;">
+            <input type="submit" value="Continue" class="awe-btn mbtn" onclick="$('#wizardData form').submit()" style="width: 100px;" />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridDemoSortingCfgInput
+
+@(Html.Awe().Grid("SortingGrid")
+    .Columns(new[]{
+        new Column{Bind = "Id", Width = 55},
+        new Column{Bind = "Person", PercentWidth = 18, 
+            Sortable = Model.PersonSortable, SortRank = Model.PersonRank, Sort = Model.PersonSort},
+        new Column{Bind = "Food", PercentWidth = 18, 
+            Sortable = Model.FoodSortable, SortRank = Model.FoodRank, Sort = Model.FoodSort},
+        new Column{Bind = "Date", Width = 100},
+        new Column{Bind = "Price", Width = 80, ClientFormat = ".Price£"},
+        new Column{Bind = "Location", Width = 150}
+    })
+    .Height(350)
+    .SingleColumnSort(Model.SingleColumnSort)
+    .Sortable(Model.Sortable)
+    .Url(Url.Action("GetItems","LunchGrid")))

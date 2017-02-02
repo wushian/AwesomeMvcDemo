@@ -1,0 +1,286 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Grid Client Data Loading";
+}
+
+<h2>Grid Client Data Demo</h2>
+@*begin1*@
+<div class="bar">
+    @Html.Awe().TextBox("txtsearch").Placeholder("search ...").CssClass("searchtxt")
+    <span class="hint">&nbsp; you can search multiple columns at the same time (try 'jer pie')</span>
+</div>
+
+@(Html.Awe().Grid("GridClientData")
+      .DataFunc("getGridData")
+      .Height(350)
+      .Mod(o => o.PageInfo().PageSize().ColumnsSelector())
+      .Persistence(Persistence.View)
+      .Resizable()
+      .Reorderable()
+      .Parent("txtsearch", "search", false)
+      .Columns(
+          new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+          new Column { Bind = "Person" },
+          new Column { Bind = "Food" },
+          new Column { Bind = "Location" },
+          new Column { Bind = "Date", Width = 120 },
+          new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+          new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" }))
+<script>
+    var lunches = @Html.Raw(DemoUtils.Encode(Db.Lunches.Select(o => new { o.Id, o.Person, o.Food, o.Location, o.Price, o.Country, o.Chef, o.Date, DateStr = o.Date.ToShortDateString() })));
+
+    function getGridData(gp) {
+        var g = utils.getGridParams(gp);
+        var words = g.search.split(" ");
+        var regs = $.map(words, function(w) { return new RegExp(w, "i"); });
+        var regslen = regs.length;
+
+        function filter(list) {
+            var res = $.grep(list, function(o) {
+                var matches = 0;
+                $.each(regs, function(_, reg) {
+                    if(reg.test(o.Food) || reg.test(o.Person) || reg.test(o.Location) || reg.test(o.Country.Name)
+                        || reg.test(o.Chef.FirstName) || reg.test(o.Chef.LastName)) matches++;
+                });
+                return regslen == matches;
+            });
+            return res;
+        }
+
+        function map(o) { return { Id: o.Id, Person: o.Person, Food: o.Food, Location: o.Location,
+            Date: o.DateStr, CountryName: o.Country.Name, ChefName: o.Chef.FirstName + ' ' + o.Chef.LastName }; };
+
+        return utils.gridModelBuilder(this, g, lunches, { key:"Id", map:map, filter: filter, ghval:{ Date: "DateStr" } });
+    }
+
+    $(function() {
+        $('#txtsearch').keyup(function() {
+            $('#GridClientData').data('api').load();
+        });
+    });
+</script>
+@*end1*@
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("GridClientDataDemo/Index.cshtml", 1)</div>
+</div>
+<br />
+<br />
+
+@*begin2*@
+<h2>Tree Grid Client Data Demo</h2>
+<div class="bar">
+    @Html.Awe().TextBox("txtsearch2").Placeholder("search ...").CssClass("searchtxt")
+</div>
+@(Html.Awe().Grid("TreeGrid1")
+            .DataFunc("treeGridData")
+            .Parent("txtsearch2", "search", false)
+            .Columns(
+                new Column { Bind = "Name" },
+                new Column { Bind = "Id", Width = 100 })
+            .Persistence(Persistence.View)
+            .Groupable(false)
+            .PageSize(3)
+            .Height(400))
+<script>
+    var treeNodes = @Html.Raw(DemoUtils.Encode(Db.TreeNodes.Select(o => new { o.Id, o.Name, ParentId = o.Parent != null ? o.Parent.Id : 0 })));
+
+    function treeGridData(gp) {
+        var g = utils.getGridParams(gp);
+
+        var words = g.search.split(" ");
+
+        var regs = $.map(words, function(w) {
+            return new RegExp(w, "i");
+        });
+
+        var regsl = regs.length;
+
+        var result = $.grep(treeNodes, function(o) {
+            var matches = 0;
+            $.each(regs, function(_, reg) {
+                reg.test(o.Name) && matches ++;
+            });
+
+            return regsl == matches;
+        });
+
+        var searchResult = result.slice(0);
+
+        $.each(searchResult, function (_, o) {
+            addParentsTo(result, o, treeNodes);
+        });
+
+        var rootNodes = $.grep(result, function (o) { return !o.ParentId; });
+
+        var getChildren = function (node, nodeLevel) {
+            return $.grep(result, function (o) { return o.ParentId == node.Id; });
+        };
+
+        return utils.gridModelBuilder(this, g, rootNodes, { key: "Id", getChildren: getChildren, forceSort: 1 });
+    }
+
+    function addParentsTo(result, node, all) {
+        if (node.ParentId) {
+            var isFound;
+            $.each(result, function (_, o) {
+                if (o.Id == node.ParentId) {
+                    isFound = true;
+                    return false;
+                }
+            });
+
+            if (!isFound) {
+                var parent = $.grep(all, function(o) { return o.Id == node.ParentId; })[0];
+                result.push(parent);
+                addParentsTo(result, parent, all);
+            }
+        }
+    }
+
+    $(function() {
+        $('#txtsearch2').keyup(function() {
+            $('#TreeGrid1').data('api').load();
+        });
+    });
+</script>
+@*end2*@
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("GridClientDataDemo/Index.cshtml", 2)</div>
+</div>
+<br />
+<br />
+<h2>Simpler grid, no search</h2>
+@*begin3*@
+@(Html.Awe().Grid("GridSimplerClientData")
+      .DataFunc("getSimpleGridData")
+      .Height(350)
+      .Mod(o => o.PageInfo().PageSize().ColumnsSelector())
+      .Persistence(Persistence.View)
+      .Columns(
+          new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+          new Column { Bind = "Person" },
+          new Column { Bind = "Food" },
+          new Column { Bind = "Location" },
+          new Column { Bind = "Date", Width = 120 },
+          new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+          new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" }))
+<script>
+    function getSimpleGridData(gp) {
+        var g = utils.getGridParams(gp);
+
+        function map(o) { return { Id: o.Id, Person: o.Person, Food: o.Food, Location: o.Location,
+            Date: o.DateStr, CountryName: o.Country.Name, ChefName: o.Chef.FirstName + ' ' + o.Chef.LastName }; };
+
+        return utils.gridModelBuilder(this, g, lunches, { key:"Id", map:map, ghval:{ Date: "DateStr" } });
+    }
+</script>
+@*end3*@
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("GridClientDataDemo/Index.cshtml", 3)</div>
+</div>
+
+<h2>Hybrid</h2>
+<div class="expl">
+    Using ajax in the client func on the first call only to load the items
+</div>
+<br />
+@*begin4*@
+@(Html.Awe().Grid("GridHybrid")
+      .DataFunc("getHybrid")
+      .Height(350)
+      .Mod(o => o.PageInfo().PageSize().ColumnsSelector())
+      .Persistence(Persistence.View)
+      .Resizable()
+      .Columns(
+          new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+          new Column { Bind = "Person" },
+          new Column { Bind = "Food" },
+          new Column { Bind = "Location" },
+          new Column { Bind = "Date", Width = 120 },
+          new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+          new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" }))
+<script>
+    var litems;
+    function getHybrid(gp) {
+        var g = utils.getGridParams(gp);
+        function maph(o) { return { Id: o.Id, Person: o.Person, Food: o.Food, Location: o.Location,
+            Date: o.DateStr, CountryName: o.Country.Name, ChefName: o.Chef.FirstName + ' ' + o.Chef.LastName }; };
+
+        var opt = { key: "Id", map: maph, ghval:{ Date: "DateStr" } };
+
+        if (litems) {
+            return utils.gridModelBuilder(this, g, litems, opt);
+        }
+
+        return $.post('@Url.Action("GetLunches")').then(function(items) {
+            litems = items;
+            var model = utils.gridModelBuilder(this, g, items, opt);
+
+            return model;
+        });
+    }
+</script>
+@*end4*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("GridClientDataDemo/Index.cshtml", 4)</div>
+</div>
+
+<br />
+<br />
+<h2>Header and Footer Summary</h2>
+
+@*begin5*@
+@(Html.Awe().Grid("GridClientDataSum")
+      .DataFunc("getGridDataSum")
+      .Height(350)
+      .Mod(o => o.PageInfo().PageSize().ColumnsSelector())
+      .Persistence(Persistence.View)
+      .Columns(
+          new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+          new Column { Bind = "Person", Group = true },
+          new Column { Bind = "Food" },
+          new Column { Bind = "Location" },
+          new Column { Bind = "Price", Width = 120 },
+          new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+          new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" }))
+<script>
+    function getGridDataSum(gp) {
+        var g = utils.getGridParams(gp);
+
+        function map(o) {
+            return {
+                Id: o.Id,
+                Person: o.Person,
+                Food: o.Food,
+                Location: o.Location,
+                Price: o.Price,
+                CountryName: o.Country.Name,
+                ChefName: o.Chef.FirstName + ' ' + o.Chef.LastName
+            };
+        };
+
+        function makeFooter(info) {
+            var total = !info.Level ? "Total: " : "";
+            var priceSum = 0;
+            $.each(info.Items, function(_, el) { priceSum += el.Price; });
+
+            return {
+                Person: total,
+                Food: " count = " + info.Items.length,
+                Price: priceSum
+            };
+        }
+
+        function makeHeader(gr) {
+            var name = gr.Items[0][gr.Column];
+            return { Content: name + ' Count = ' + gr.Items.length };
+        }
+
+        return utils.gridModelBuilder(this, g, lunches, { key: "Id", map: map, makeFooter: makeFooter, makeHeader: makeHeader });
+    }
+</script>
+@*end5*@
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("GridClientDataDemo/Index.cshtml", 5)</div>
+</div>

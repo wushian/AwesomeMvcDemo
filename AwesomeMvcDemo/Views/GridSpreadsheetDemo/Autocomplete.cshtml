@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "Autocomplete Cells Spreadsheet Demo";
+}
+
+<h1>Autocomplete Cells Spreadsheet Demo</h1>
+<br />
+Try and edit some cells, after switch pages/refresh broswer. Note you have to exit the cell or hit enter in order for the change to be persisted.
+<br />
+<div class="bar">
+    <button type="button" class="awe-btn" id="addrow">add row</button>
+</div>
+
+@*begin*@
+@(Html.Awe().Grid("Spreadsheet")
+                .Groupable(false)
+                .Sortable(false)
+                .Url(Url.Action("GridGetItems"))
+                .CssClass("spreadsh")
+                .Columns(
+                new Column { Bind = "Name", ClientFormatFunc = "txt" },
+                new Column { Bind = "Location", ClientFormatFunc = "txt" },
+                new Column { Bind = "Meal", ClientFormatFunc = "txt" }))
+<textarea id="log" class="log"></textarea>
+<script>
+    function txt(model, name) {
+        var format = @Html.Raw(DemoUtils.Encode(Html.Awe().AjaxRadioList("#Name").Prefix("#Prefix")
+                    .Load(false)
+                    .Svalue("#Value")
+                    .Combobox(o => o.SearchFunc("utils.osearch", Url.Action("SearchMeals", "Data"), "m1").UseConVal()).ToString()));
+
+        var val = model[name];
+        if (!val) val = ""; //replace null with ""'
+        return format.split("#Name").join(name).split("#Value").join(val).split("#Prefix").join("c" + model.Id);
+    }
+
+    function add() {
+        var row = $('#Spreadsheet').data('api').renderRow({ Id: 0 });
+        var xhr = $('#Spreadsheet').data('api').load({ oparams: { page: 1 } }); // first go to page 1
+
+        $.when(xhr).done(function() {
+            $('#Spreadsheet .awe-row:first').before(row); // insert the row
+            row.find('input:first').focus();
+        });
+    }
+
+    $(function() {
+        $('#Spreadsheet').on('change', 'input.awe-val', function() {
+            var model = $(this).closest('.awe-row').data('model');
+            var prop = $(this).attr("name");
+            var val = $(this).val();
+            if (model[prop] != val) {
+                model[prop] = val;
+                $.post('@(Url.Action("Save"))', { id: model.Id, name: prop, value: val }, function (res) {
+                    if (model.Id == 0) {
+                        model.Id = res.Id;
+                        $('#log').prepend('new record added id = ' + res.Id + ' \n');
+                    }
+
+                    $('#log').prepend(model[prop] + ' saved \n');
+                }).fail(function (xhr){ awem.notif(xhr.responseText, 0, 'err'); });
+            }
+        });
+
+        $('#addrow').on('click', add);
+    });
+</script>
+
+<style>
+    .spreadsh .awe-row td {
+        background: white;
+        padding: 0;
+        text-align: center;
+    }
+
+    .spreadsh input[type="text"] {
+        width: 100%;
+        margin: auto;
+        border: none;
+        padding: 5px;
+        height: 27px;
+    }
+</style>
+@*end*@
+<br />
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        Adding autocomplete behaviour for each cell by using the combobox instead of a textbox. <br/>
+        The comboboxes use remote search and a shared cache for the search results ( by setting the same cache key "m1" )
+    </div>
+    <div data-caption="view">@Html.Source("GridSpreadsheetDemo/Autocomplete.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/GridSpreadsheetDemoController.cs")</div>
+</div>

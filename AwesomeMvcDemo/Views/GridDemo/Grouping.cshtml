@@ -1,0 +1,79 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridDemoGroupingCfgInput
+@{
+    ViewBag.Title = "Grid Grouping, group headers, footers, grid footer";
+}
+<h3>Grouping</h3>
+
+<div class="csettings">
+    <form action="@Url.Action("GroupingContent", "GridDemo")" method="post" class="ConfigForm">
+        <label>
+            Show Group Bar:
+        @Html.Awe().CheckBoxFor(o => o.ShowGroupBar)
+        </label>
+        <label>
+            Show Grouped Column:
+        @Html.Awe().CheckBoxFor(o => o.ShowGroupedColumn)
+        </label>
+        <label>
+            Groupable:
+        @Html.Awe().CheckBoxFor(o => o.Groupable)
+        </label>
+        <label>
+            Collapsed: 
+        @Html.Awe().CheckBoxFor(o => o.Collapsed)
+        </label>
+        <br />
+        <div>
+            <div class="collabel">Person column: </div>
+            <label>
+                Groupable @Html.Awe().CheckBoxFor(o => o.PersonGroupable)
+            </label>
+            <label>Grouped @Html.Awe().CheckBoxFor(o => o.PersonGrouped)</label>
+            <label>Group Rank @Html.Awe().TextBoxFor(o => o.PersonRank).Numeric()</label>
+            <label>Group Removable @Html.Awe().CheckBoxFor(o => o.PersonRem)</label>
+        </div>
+        <div>
+            <div class="collabel">Food column: </div>
+            <label>
+                Groupable @Html.Awe().CheckBoxFor(o => o.FoodGroupable)</label>
+            <label>Grouped @Html.Awe().CheckBoxFor(o => o.FoodGrouped)</label>
+            <label>Group Rank @Html.Awe().TextBoxFor(o => o.FoodRank).Numeric()</label>
+            <label>Group Removable @Html.Awe().CheckBoxFor(o => o.FoodRem)</label>
+        </div>
+        <label>
+            <input type="submit" value="change settings" class="awe-btn mbtn" />
+        </label>
+    </form>
+</div>
+
+<div id="demoContent">
+    @Html.Partial("GroupingContent")
+</div>
+@Html.Awe().Form().FormClass("ConfigForm").Success("setContent")
+<script type="text/javascript">
+    function setContent(o) {
+        $('#GroupingGrid').data('api').clearpersist();
+        $('#demoContent').html(o);
+    }
+</script>
+<br />
+<div class="tabs">
+    <div data-caption="view">@Html.Source("GridDemo/GroupingContent.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/GroupingGridController.cs")</div>
+</div>
+
+<br />
+<div class="expl">
+    <p>
+        Grouping can be enabled or disabled for the whole grid by using the <code>.Groupable(bool)</code>
+        and can be set for each column by setting the <code>Column.Groupable</code>
+    </p>
+    <ul>
+        <li><code>Column.Group</code> - defines initial column grouped state</li>
+        <li><code>Column.GroupRank</code> - group rank for this column</li>
+        <li><code>Column.GroupRemovable</code> - (default is true) if set to false grouped column won't have the remove group button</li>
+        <li><code>.ShowGroupedColumn</code> - if true the grouped columns will be hidden </li>
+        <li><code>GridModelBuilder.MakeHeader</code> - defines a function for creating the GroupHeader</li>
+        <li><code>GridModelBuilder.MakeFooter</code> - function for creating a group footer</li>
+    </ul>
+</div>

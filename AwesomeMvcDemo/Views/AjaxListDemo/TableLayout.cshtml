@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "AjaxList with Table Layout";
+}
+<h3>Using Table Layout</h3>
+@*begin*@
+@(Html.Awe().AjaxList("MealsTableLayout")
+            .TableLayout(true))
+@*end*@
+<br />
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        Setting <code>.TableLayout(true)</code> will make the AjaxList use a table tag instead of ul, so now you can use 'tr' tags in your custom layout.<br />
+        <code>isTheadEmpty</code> tells if the table header is empty or not, this way we set it only the first time (not on each subsequent search).
+    </div>
+    <div data-caption="view">@Html.Source("AjaxListDemo/TableLayout.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/AjaxList/MealsTableLayoutAjaxListController.cs")</div>
+    <div data-caption="custom item view">@Html.Source("MealsTableLayoutAjaxList/CustomItems.cshtml")</div>
+    <div data-caption="table header view">@Html.Source("MealsTableLayoutAjaxList/TableHeader.cshtml")</div>
+</div>
+
+

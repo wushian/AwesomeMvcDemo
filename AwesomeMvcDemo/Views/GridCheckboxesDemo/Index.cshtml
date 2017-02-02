@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "Grid with checkboxes";
+}
+<h2>Grid with checkboxes</h2>
+@*begin*@
+@(Html.Awe().Grid("GridChk")
+            .Columns(
+                new Column
+                {
+                    Width = 40,
+                    ClientFormat = "<input type='checkbox' name='id' value='.Id'/>",
+                    Header = "<input type='checkbox' name='chkAll' />"
+                },
+                new Column { Bind = "Person" },
+                new Column { Bind = "Food" },
+                new Column { Bind = "Location" }
+            )
+            .Url(Url.Action("GetItems", "LunchGrid")))
+
+<br />
+<button class="awe-btn" id='btnGetSelection1'>get selection</button>
+<span id="log1"></span>
+
+<script>
+    $(function () {
+        gridCheckboxes('GridChk');
+
+        //get selection
+        $('#btnGetSelection1').click(function () {
+            var arr = $('#GridChk [name=id]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $('#log1').html(JSON.stringify(arr));
+        });
+    });
+
+    function gridCheckboxes(gridId) {
+        //select/unselect all
+        var $grid = $('#' + gridId);
+        $grid.on('click', '[name=chkAll]', function () {
+            var isChecked = $(this).prop('checked');
+            $grid.find('[name=id]').prop('checked', isChecked);
+        });
+    }
+</script>
+@*end*@
+<div class="code">
+    @Html.Source("GridCheckboxesDemo/Index.cshtml")
+</div>
+
+<h2>Grid with checkboxes that persist state when paging</h2>
+@*beginpers*@
+@(Html.Awe().Grid("GridChkPersistent")
+                .Columns(
+                    new Column
+                    {
+                        Width = 40,
+                        ClientFormat = "<input type='checkbox' name='id' value='.Id'/>",
+                        Header = "<input type='checkbox' name='chkAll' />"
+                    },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Location" }
+                )
+                .Url(Url.Action("GetItems", "LunchGrid"))
+)
+
+<br />
+<button class="awe-btn" id='btnGetSelection'>get page selection</button>
+<button class="awe-btn" id='btnGetAllSelection'>get selection (all pages)</button>
+<span id="log"></span>
+
+<script>
+    $(function () {
+        gridPersistentCheckboxes("GridChkPersistent");
+
+        //get selection
+        $('#btnGetSelection').click(function () {
+            var arr = $('#GridChkPersistent [name=id]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $('#log').html(JSON.stringify(arr));
+        });
+        
+        //get all selection (including checkboxes on other pages)
+        $('#btnGetAllSelection').click(function () {
+            var checks = $('#GridChkPersistent').data('checks');
+            var keys = [];
+            for (var k in checks) keys.push(k);
+            $('#log').html(JSON.stringify(keys));
+        });
+    });
+
+    function gridPersistentCheckboxes(gridId) {
+        $(document).on('aweload', '#' + gridId, function () {
+            var $grid = $(this);
+            var checks = $grid.data('checks');
+            var allChecked = 0;
+            if (checks) {
+                allChecked = 1;
+                $grid.find('.awe-row').each(function () {
+                    if (checks[$(this).data('k')]) {
+                        $(this).find('[name=id]').prop('checked', true);
+                    } else {
+                        allChecked = 0;
+                    }
+                });
+            } else {
+                $grid.data('checks', {});
+            }
+
+            $grid.find('[name=chkAll]').prop('checked', allChecked);
+        });
+
+        //check/uncheck all
+        $(document).on('click', '#' + gridId + ' [name=chkAll]', function () {
+            var isChecked = $(this).prop('checked');
+            var $grid = $(this).closest('.awe-grid');
+            var checks = $grid.data('checks');
+            $grid.find('.awe-row').each(function () {
+                var $row = $(this);
+                $row.find('[name=id]').prop('checked', isChecked);
+                if (isChecked) checks[$row.data('k')] = 1;
+                else delete checks[$row.data('k')];
+            });
+            $grid.data('checks', checks);
+        });
+
+        $(document).on('click', '#' + gridId + ' [name=id]', function () {
+            var $this = $(this);
+            var $grid = $this.closest('.awe-grid');
+            var checks = $grid.data('checks');
+            var isChecked = $this.prop('checked');
+            var key = $this.closest('.awe-row').data('k');
+            if (isChecked) checks[key] = 1;
+            else delete checks[key];
+            $grid.data('checks', checks);
+        });
+    }
+
+</script>
+<style>
+    input[type=checkbox]
+    {
+        zoom: 1.3;
+        margin: 0;
+        vertical-align: middle;
+    }
+</style>
+@*endpers*@
+<div class="code">
+    @Html.Source("GridCheckboxesDemo/Index.cshtml", "pers")
+</div>
+
+
+<h2>Tree grid with checkboxes</h2>
+@*begintree*@
+@(Html.Awe().Grid("TreeGrid1")
+            .Url(Url.Action("SimpleTree", "TreeGrid"))
+            .Columns(
+                new Column { Bind = "Name", ClientFormat = "<input class='awe-nonceb' type='checkbox' name='id' value='.Id'/> .Name" },
+                new Column { Bind = "Id", Width = 100 })
+            .Persistence(Persistence.View)
+            .Groupable(false)
+            .PageSize(3)
+      .Height(400))
+
+<br />
+<button class="awe-btn" id='btnGetSelectionTree'>get selection</button>
+<span id="logtree"></span>
+
+<script>
+    $(function() {
+        //get selection
+        $('#btnGetSelectionTree')
+            .click(function() {
+                var arr = $('#TreeGrid1 [name=id]:checked')
+                    .map(function() {
+                        return $(this).val();
+                    })
+                    .get();
+
+                $('#logtree').html(JSON.stringify(arr));
+            });
+    });
+</script>
+@*endtree*@
+<div class="code">
+    @Html.Source("GridCheckboxesDemo/Index.cshtml", "tree")
+</div>

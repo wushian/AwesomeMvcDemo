@@ -1,0 +1,95 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Grid inline editing demo";
+}
+
+<h2>Grid inline editing demo</h2>
+@*begin*@
+
+<div class="bar">
+    <div style="float: right;">
+        @Html.Awe().TextBox("txtSearch").Placeholder("search...").CssClass("searchtxt")
+    </div>
+    <button type="button" onclick="$('#DinnersGrid').data('api').inlineCreate()" class="awe-btn mbtn">Create</button>
+    @{
+        var chefId = Db.Chefs.First().Id;
+        var meals = Db.Meals.Take(2).Select(o => o.Id).ToArray();
+        var initObj = new { Name = "hi there", Date = DateTime.Now.ToShortDateString(), ChefId = chefId, MealsIds = meals, OrganicChecked = "checked" };
+    }
+    <button type="button" onclick="$('#DinnersGrid').data('api').inlineCreate(@DemoUtils.Encode(initObj))" class="awe-btn mbtn">Create with predefined values</button>
+</div>
+
+@Html.InitDeletePopupForGrid("DinnersGrid", "GridInlineEditDemo")
+
+@(Html.Awe().Grid("DinnersGrid")
+      .Mod(o => o.PageInfo().InlineEdit(Url.Action("Create"), Url.Action("Edit")))
+      .Url(Url.Action("GridGetItems"))
+      .Parent("txtSearch", "search")
+      .Height(350)
+      .Resizable()
+      .Reorderable()
+      .Columns(
+          new Column { Bind = "Id", Width = 75 }
+          .Mod(o => o.InlineId()),
+
+          new Column { Bind = "Name" }
+          .Mod(o => o.Inline(Html.Awe().TextBox("Name"))),
+
+          new Column { Bind = "Date", Width = 170 }
+          .Mod(o => o.Inline(Html.Awe().DatePicker("Date"))),
+
+          new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef", Width = 200 }
+            .Mod(o => o.Inline(Html.Awe().Lookup("Chef").Controller("ChefLookup"), "ChefId")),
+
+          new Column { ClientFormat = ".Meals", Header = "Meals", Width = 250 }
+            .Mod(o => o.Inline(Html.Awe().AjaxCheckboxList("Meals").Multiselect().DataFunc("utils.getItems(meals)"), "MealsIds")),
+
+          new Column { Bind = "BonusMeal.Name", ClientFormat = ".BonusMeal", Header = "Bonus Meal" }
+            .Mod(o => o.Inline(Html.Awe().AjaxRadioList("BonusMealId").Odropdown().DataFunc("utils.getItems(meals)"), "BonusMealId")),
+
+          new Column { Bind = "Organic", Width = 100, ClientFormat = ".DispOrganic" }
+            .Mod(o => o.InlineBool(cssClass: "btoggle")),
+
+          new Column { ClientFormat = GridUtils.InlineEditFormat(), Width = 60 },
+          new Column { ClientFormat = GridUtils.InlineDeleteFormat("deleteDinnersGrid"), Width = 70 }))
+
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+
+<script>
+    var meals = @Html.Raw(DemoUtils.Encode(Db.Meals.Select(o => new KeyContent(o.Id, o.Name))));
+
+    $(function () {
+        $(document).on('aweinlineedit', function () {
+            $(this).find(".btoggle").bootstrapToggle({
+                on: 'Yes',
+                off: 'No'
+            });
+        });
+    });
+</script>
+@*end*@
+<br />
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        Inline editing for grid achieved using custom mods.<br />
+
+        Delete action is the same as in the grid crud demo, using a popup.<br />
+
+        To set initial values on create set the initial model as a parameter in the inlineCreate method (as done on the home page), example: $grid.data('api').inlineCreate({ Name: 'hi' })<br />
+        On Save you also get the grid parameters, for example this grid has txtSearch as parent, so you get the value of txtSearch as 'search' parameter in the Edit/Create post actions
+
+    </div>
+    <div data-caption="view">@Html.Source("GridInlineEditDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/GridInlineEditDemoController.cs")</div>
+</div>
+<br />
+@Html.Awe().InitPopup().Name("inlineEdit").Url(Url.Action("Popup")).Fullscreen(true)
+
+<button type="button" class="awe-btn" onclick="awe.open('inlineEdit')">Inline edit inside a popup</button>
+<br />
+<br />
+See also:
+<br />
+@Html.ActionLink("Grid inline editing conditional demo", "ConditionalDemo")<br />
+@Html.ActionLink("Grid multiple editors demo", "MultiEditorsDemo")

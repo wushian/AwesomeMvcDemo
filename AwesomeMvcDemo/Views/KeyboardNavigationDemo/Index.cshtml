@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Keyboard navigation and selection in Awesome Grid";
+}
+<h2>Keyboard navigation and selection demo</h2>
+adding keyboard navigation functionality using custom js, any grid with keynav class assigned will get this functionality
+    <br />
+<br />
+@*begin*@
+@(Html.Awe().Grid("KeyNavGrid")
+                .CssClass("keynav")
+                .DataFunc("getHybrid")
+                .Height(400)
+                .Selectable(SelectionType.Single)
+                .Columns(
+                new Column { Bind = "Id", Width = 55 },
+                new Column { Bind = "Person" },
+                new Column { Bind = "Food" },
+                new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+                new Column { Bind = "Location" }))
+
+<script>
+    $(function () {
+        $(document).on('keydown', function (e) {
+            if (e.altKey && e.which == 71)// alt + g
+            {
+                $('.keynav .awe-row').first().focus();
+            }
+        });
+
+        $('.keynav').on('aweload', function () {
+            var $grid = $(this);
+            $grid.find('.awe-row')
+                .each(function () {
+                    $(this).attr('tabindex', 0);
+                })
+                .on('keydown', function (e) {
+                    var keys = [40, 38, 35, 36, 34, 33, 32];
+                    if ($.inArray(e.which, keys) != -1)
+                        e.preventDefault();
+
+                    var $row = $(this);
+
+                    if (e.which == 13 || e.which == 32) { // enter, space
+                        $row.click();
+                    } else if (e.which == 40) //down
+                    {
+                        if ($row.is(":last-child"))
+                            nextPage();
+                        else
+                            $row.nextAll('.awe-row').first().focus();
+
+                    } else if (e.which == 38) //up
+                    {
+                        if ($row.is(":first-child"))
+                            prevPage();
+                        else
+                            $row.prevAll('.awe-row').first().focus();
+                    } else if (e.which == 35) //end
+                        $row.parent().children('.awe-row').last().focus();
+                    else if (e.which == 36) //home
+                        $row.parent().children('.awe-row').first().focus();
+                    else if (e.which == 34) // page down
+                    {
+                        nextPage();
+                    } else if (e.which == 33) // page up 33
+                    {
+                        prevPage();
+                    }
+                });
+
+            function nextPage() {
+                var res = $grid.data('api').getResult();
+                if (res.p < res.pc) {
+                    $grid.data('api').load({ oparams: { page: res.p + 1 } });
+                }
+            }
+
+            function prevPage() {
+                var res = $grid.data('api').getResult();
+                if (res.p > 1) {
+                    $grid.data('api').load({ oparams: { page: res.p - 1 } });
+                }
+            }
+
+            $grid.find('.awe-row').first().focus();
+        });
+    });
+
+    var litems;
+    function getHybrid(gp) {
+        var g = utils.getGridParams(gp);
+        function map(o) {
+            return {
+                Id: o.Id, Person: o.Person, Food: o.Food, Location: o.Location,
+                Date: o.Date, CountryName: o.Country.Name, ChefName: o.Chef.FirstName + ' ' + o.Chef.LastName
+            };
+        };
+
+        var opt = { key: "Id", map: map, dates: ["Date"] };
+
+        if (litems) {
+            return utils.gridModelBuilder(this, g, litems, opt);
+        }
+
+        return $.post('@Url.Action("GetLunches","GridClientDataDemo")').then(function (items) {
+            litems = items;
+            var model = utils.gridModelBuilder(this, g, items, opt);
+
+            return model;
+        });
+    }
+</script>
+@*there's aslo css in common.css for this demo (see .keynav) *@
+@*end*@
+<br />
+alt+g - select grid<br />
+up and down - move to next/prev row, if it's the last or first row it will go on next/prev page<br />
+page up and page down - next/prev page<br />
+home, end - first, last row
+<br />
+enter, space - select row<br />
+@Html.Source("KeyboardNavigationDemo/Index.cshtml", wrap: true)

@@ -1,0 +1,58 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.ListBindingInput
+@{
+    ViewBag.Title = "List binding demo";
+}
+    <style>
+        .tt td
+        {
+            vertical-align: top;
+            padding: 0.3em 0.5em 0.3em 0;
+        }
+
+        .tt input[type="text"]{
+            padding: 0.2em 0.5em;
+        }
+    </style>
+    <h3>
+        Model binding to a list</h3>
+    Phil Haack Article: <a href="http://haacked.com/archive/2008/10/23/model-binding-to-a-list.aspx/">http://haacked.com/archive/2008/10/23/model-binding-to-a-list.aspx/</a>
+    <br />
+    <br />
+    <br />
+    @*begin*@
+    @using (Html.BeginForm())
+       {
+    <table class="tt">
+        @for (var j = 0; j < Model.Dinners.Count(); j++)
+           {
+               var i = j;
+        <tr>
+            <td>
+                @Html.HiddenFor(o => o.Dinners[i].Id)
+                @Html.Awe().TextBoxFor(o => o.Dinners[i].Name).Value(Model.Dinners[i].Name)
+                @Html.ValidationMessageFor(o => o.Dinners[i].Name)
+                <br />
+            </td>
+            <td>
+                @Html.Awe().DatePickerFor(o => o.Dinners[i].Date).Value(Model.Dinners[i].Date).ClearButton()<br />
+                @Html.ValidationMessageFor(o => o.Dinners[i].Date)
+            </td>
+            <td>
+                @Html.Awe().LookupFor(o => o.Dinners[i].Chef).Value(Model.Dinners[i].Chef).ClearButton()<br />
+                @Html.ValidationMessageFor(o => o.Dinners[i].Chef)
+            </td>
+            <td>
+                @Html.Awe().MultiLookupFor(o => o.Dinners[i].Meals).Value(Model.Dinners[i].Meals).ClearButton()<br />
+                @Html.ValidationMessageFor(o => o.Dinners[i].Meals)
+            </td>
+        </tr>
+        
+       }
+    </table>
+    <br/>
+    <input type="submit" value="submit" class="awe-btn mbtn"/>
+    }
+    @*end*@
+    @Html.Source("ListBinding/Index.cshtml")
+
+

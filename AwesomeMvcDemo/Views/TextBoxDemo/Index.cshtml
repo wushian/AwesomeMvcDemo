@@ -1,0 +1,83 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.TextBoxDemoInput
+@{
+    ViewBag.Title = "TextBox Demo";
+}
+
+<h1>TextBox Demo</h1>
+<br />
+<div style="margin-left: 2em;">
+    @*begin*@
+    Simple textbox:<br />
+    @(Html.Awe().TextBoxFor(o => o.Name)
+          .Placeholder("type here..."))
+    <br />
+    <br />
+    Numeric textbox:<br />
+    @(Html.Awe().TextBox("Numeric").Numeric().Value(123))
+     <br />
+    <br />   
+        Numeric with decimals:<br />
+    @(Html.Awe().TextBox("NumericDec").Numeric(o => o.Decimals()).Value(1.2))
+
+    <br />
+    <br />
+
+    Decimals and custom format:<br />
+    @(Html.Awe().TextBox("Number")
+          .Value(11.23)
+          .FormatFunc("utils.postfix('£')")
+          .Numeric(o => o.Decimals(2).Step(0.01)))
+    <br />
+    <br />
+
+    @(Html.Awe().TextBox("Percent")
+                  .Value(0.1)
+                  .FormatFunc("utils.percent")
+                  .Numeric(o => o.Decimals(2).Step(0.01).Max(1)))
+    <br />
+    <br />
+
+    @(Html.Awe().TextBox("PriceUSD")
+          .Value(20)
+          .FormatFunc("utils.prefix('$')")
+          .Numeric(o => o.Decimals(2)))
+    <br />
+    <br />
+
+    Simple with custom format:<br />
+    @(Html.Awe().TextBox("Exp")
+          .Value("the actual value")
+          .FormatFunc("secret"))
+    <br/>
+    <br/>
+    Duration:<br/>
+    @(Html.Awe().TextBox("Duration")
+                .Numeric(o => o.Step(10))
+                .Value(90)
+                .FormatFunc("duration('hour', 'hours', 'min')"))
+    
+    <script>
+        function secret(val) {
+            return "secret";
+        }
+        
+        function duration(hourw, hoursw, minw) {
+            return function (val) {
+                var mval = parseInt(val, 10);
+                if (isNaN(mval)) return val;
+                var hour = Math.floor(mval / 60);
+                var minute = mval % 60;
+                var res = "";
+                if (hour > 0)
+                    res += hour + " " + (hour > 1 ? hoursw : hourw) + " ";
+                if (minute > 0)
+                    res += minute + " " + minw;
+                return res;
+            };
+        };
+    </script>
+    @*end*@
+</div>
+
+<br/>
+@Html.Source("TextBoxDemo/Index.cshtml")

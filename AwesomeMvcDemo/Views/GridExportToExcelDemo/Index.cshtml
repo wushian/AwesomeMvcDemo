@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "Export grid to Excel using NPOI - ASP.net MVC Awesome Demo";
+}
+
+<h2>Export grid to excel demo</h2>
+export the content of a grid to excel, to create an excel file we're using the <a href="http://npoi.codeplex.com">NPOI library</a>
+<br />
+<br />
+@*begin*@
+@(Html.Awe().Grid("LunchGrid")
+                    .Url(Url.Action("GetItems"))
+                    .Persistence(Persistence.Session)
+                    .Resizable(true)
+                    .Height(350)
+                    .Columns(
+                    new Column { Bind = "Id", Width = 80 },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Date", Width = 150},
+                    new Column { Bind = "Price", Width = 110 },
+                    new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country" },
+                    new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" },
+                    new Column { Bind = "Location" }))
+
+<br />
+<div class="bar">
+    <button id="exportGrid" type="button" class="awe-btn ib">Export grid to excel</button>
+    <label>@Html.Awe().CheckBox("allPages") All pages</label>
+    <form id="exportGridForm" method="post" action="@Url.Action("ExportGridToExcel")" class="ib">
+    </form>
+    <br/>
+    <br/>
+    <form method="post" action="@Url.Action("ExportAllToExcel")" class="ib">
+        <input id="export" type="submit" class="awe-btn" value="Export all records to excel" />
+    </form>
+</div>
+<script>
+    $(function () {
+        $('#exportGrid').click(function () {
+            var $form = $('#exportGridForm').empty();
+
+            var req = $('#LunchGrid').data('api').getRequest();
+
+            for (var i = 0; i < req.length; i++) {
+                $form.append("<input type='hidden' name='" + req[i].name + "' value='" + req[i].value + "'/>");
+            }
+
+            $form.append($('#allPages').clone());
+
+            $form.submit();
+        });
+    });
+</script>
+@*end*@
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("GridExportToExcelDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/GridExportToExcelDemoController.cs")</div>
+</div>
+
+
+

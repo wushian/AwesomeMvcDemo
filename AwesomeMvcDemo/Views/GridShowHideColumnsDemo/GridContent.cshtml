@@ -1,0 +1,16 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridHideColumnsDemoInput
+
+@{
+    var columns = new List<Column> { new Column { Bind = "Id", Width = 70, Groupable = false }, new Column { Bind = "Person" } };
+
+    if (Model.ShowFood) { columns.Add(new Column { Bind = "Food" }); }
+
+    if (Model.ShowLocation) { columns.Add(new Column { Bind = "Location" }); }
+
+    if (Model.ShowDate) { columns.Add(new Column { Bind = "Date" }); }
+}
+
+@(Html.Awe().Grid("HideColumnsDemoGrid")
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Columns(columns.ToArray()))
+

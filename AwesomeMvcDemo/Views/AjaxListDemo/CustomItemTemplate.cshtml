@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "AjaxList Custom Item Template";
+}
+
+<h3>Custom Item Template</h3>
+@*begin*@
+@Html.Awe().AjaxList("MealsCustomItem")
+@*end*@
+<br />
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        To use custom item template in the controller instead of setting the Items property you have to set the Content property with the prerendered html content.
+    <br />
+        <code>RenderView</code> is a controller extension from Omu.AwesomeMvc that renders a view and returns the result as a string.<br />
+        The view that gets rendered must consist from 'li' tags (or 'tr' if using TableLayout) with class="awe-li" and data-val=key attributes
+            
+    </div>
+    <div data-caption="view">@Html.Source("AjaxListDemo/CustomItemTemplate.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/AjaxList/MealsCustomItemAjaxListController.cs")</div>
+    <div data-caption="custom item view">@Html.Source("MealsCustomItemAjaxList/CustomItem.cshtml")</div>
+</div>
+
+
+

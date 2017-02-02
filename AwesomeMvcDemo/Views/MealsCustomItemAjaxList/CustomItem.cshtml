@@ -1,0 +1,16 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    Layout = null;
+}
+@model IList<Meal>
+
+@foreach (Meal meal in Model)
+{
+    <li class="awe-li" data-val="@meal.Id">
+        Name: @meal.Name
+        <br />
+        Category: @meal.Category.Name
+        <br />
+        Description: @meal.Description
+    </li>
+}

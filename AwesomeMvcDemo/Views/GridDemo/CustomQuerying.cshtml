@@ -1,0 +1,28 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.GridDemoCfgInput
+@{
+    ViewBag.Title = "Grid with Custom querying, Sorting And Paging";
+}
+<h3>Grid custom querying</h3>
+The default scenario is that you give an IQueryable to the GridModelBuilder and it will sort it and page it 
+    using <code>.OrderBy</code> and <code>.Skip/.Take</code>, this works ok on EntityFramework, 
+    but if you're doing something like sql procedures, service calls etc. you might want to do this sorting and paging yourself.
+    <br />
+<br />
+Sorting rules and current page are in the <code>GridParams {SortNames[], SortDirections[], Page}</code> parameter and to tell the <code>GridModelBuilder</code> not to do any querying you have to set the <code>PageCount</code> parameter on it. 
+    (grouping doesn't require any querying)
+@*begin*@
+@(Html.Awe().Grid("CustomQueryingGrid")
+                .Url(Url.Action("GetItems", "CustomQueryingGrid"))
+                .Height(450)
+                .Columns(
+                        new Column { Bind = "Id", Groupable = false, Sortable = false, Width = 70 },
+                        new Column { Bind = "Person" },
+                        new Column { Bind = "Food" }))
+@*end*@
+<br />
+<div class="tabs">
+    <div data-caption="view">@Html.Source("GridDemo/CustomQuerying.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/CustomQueryingGridController.cs")</div>
+</div>
+
+

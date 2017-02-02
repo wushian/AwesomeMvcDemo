@@ -1,0 +1,33 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.LookupCrudDemoInput
+@{
+    ViewBag.Title = "Lookup with CRUD functionality inside its Popup";
+}
+
+<h3>Lookup with CRUD functionality in its Popup</h3>
+@*begin*@
+@using (Html.BeginForm())
+{
+    @Html.EditorFor(o => o.Dinner)
+    
+    <input type="submit" value="Submit" class="awe-btn" />
+}
+@*end*@
+<br />
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        the lookup has a custom SearchForm, in that custom view there's a Create button which calls a PopupForm, 
+        for the editing/deleting a custom Item template is used for the lookup so that each item in the list has an edit and delete button, 
+        the edit/delete button calls a PopupForm as well, 
+        create and edit PopupForm have success js function attached which receive from the server the rendered row and after it appends/update the list with it.
+    </div>
+    <div data-caption="view">
+        @Html.Source("CrudInLookup/Index.cshtml")
+    </div>
+    <div data-caption="lookup controller">
+        @Html.Csource("Awesome/Lookup/DinnerLookupController.cs")
+    </div>
+    <div data-caption="searchform view">@Html.Source("DinnerLookup/SearchForm.cshtml")</div>
+    <div data-caption="list item view">@Html.Source("Shared/ListItems/Dinner.cshtml")</div>
+</div>
+
+

@@ -1,0 +1,67 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.MultiLookupDemoCfgInput
+@{
+    ViewBag.Title = "Awesome Grid Demo";
+}
+<h3>MultiLookup</h3>
+<div class="csettings">
+    <form action="@Url.Action("IndexContent", "MultiLookupDemo")" method="post" class="ConfigForm">
+        <label>
+            ClearButton:
+                @Html.Awe().CheckBoxFor(o => o.ClearButton)</label>
+        <label>
+            HighlightChange:
+                @Html.Awe().CheckBoxFor(o => o.HighlightChange)</label>
+        <label>
+            Full screen:
+                @Html.Awe().CheckBoxFor(o => o.Fullscreen)</label>
+        <label>
+            Drag and Drop:
+                @Html.Awe().CheckBoxFor(o => o.DragAndDrop)</label>
+        <br />
+        <label>
+            Popup Height:
+                @Html.Awe().TextBoxFor(o => o.Height).Numeric().MaxLength(3)</label>
+        <label>
+            Popup Width:
+                @Html.Awe().TextBoxFor(o => o.Width).Numeric().MaxLength(3)
+        </label>
+        <br />
+        <br />
+        <input type="submit" value="change settings" class="awe-btn awe-il mbtn" />
+    </form>
+</div>
+<br />
+<div id="demoContent">
+    @Html.Partial("IndexContent")
+</div>
+<br/>
+<div class="tabs">
+    <div class="expl" data-caption="description">
+        <p>
+            MultiLookup needs a controller or urls to be specified, by default convention it
+            will look for a controller with the same name as it + "MultiLookupController"<br />
+        </p>
+        <ul>
+            <li><code>action GetItems</code> - used to show the value in the readonly field, it
+                will receive a <code>v</code> parameter which is going to be the keys of the selected
+                items</li>
+            <li><code>action Search</code> - gets data for the search result in it's popup, it receives
+                a <code>selected</code> parameter that represents the selected values, it should
+                return a <code>Json(AjaxListResult)</code>, so it has same features as the AjaxList
+                (table layout, custom item template)</li>
+            <li><code>action Selected</code> - gets data for the selected items in the popup</li>
+        </ul>
+    </div>
+    <div data-caption="view">@Html.Source("MultiLookupDemo/IndexContent.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/MultiLookup/MealsMultiLookupController.cs")</div>
+</div>
+
+@Html.Awe().Form().FormClass("ConfigForm").Success("setContent")
+<script type="text/javascript">
+    function setContent(o) {
+        $('#Meals-awepw').length && $('#Meals-awepw').data('api').close();
+        $('#demoContent').html(o).addClass('awe-changing').removeClass('awe-changing', 1000);
+    }
+</script>
+
+

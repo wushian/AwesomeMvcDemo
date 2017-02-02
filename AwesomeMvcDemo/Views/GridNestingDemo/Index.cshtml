@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "Grid nesting demo";
+}
+<h3>Grid nesting demo</h3>
+<div class="expl">
+    The awesome grid can have multiple nests, an url or js func can be specified for loading the nest content.
+    <br />
+    When using url the Key of the grid is sent as "Key" parameter to the url.<br />
+    The class of the html element that will act as a toggle button for the nest needs to be specified, that element will get the awe-on class additionally while its nest is open.
+    Opening a nest will close other nests that are open for the same row.
+</div>
+
+<h2>Master detail grid</h2>
+Using one nest with url to achieve a master detail grid view
+@*begin1*@
+@(Html.Awe().Grid("MasterDetailGrid")
+                .Columns(
+                    new Column { ClientFormat = "<div class='detailbtn'><i class='ui-icon ui-icon-triangle-1-e awe-il'></i> .Id</div>", Width = 100, Header = "Id" },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Location" }
+                )
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Nests(new Nest { ButtonClass = "detailbtn", Url = Url.Action("LunchDetail"), LoadOnce = true }))
+<style>
+    .detailbtn {
+        vertical-align: middle;
+        border: none;
+        background-color: transparent;
+        outline: none;
+        cursor: pointer;
+        margin-left: -5px;
+        padding-left: 5px;
+    }
+
+        .detailbtn .ui-icon {
+            vertical-align: middle;
+        }
+
+        .detailbtn.awe-on i {
+            background-position: -48px -16px;
+        }
+</style>
+@*end1*@
+<div class="tabs code">
+    <div data-caption="demo view">@Html.Source("GridNestingDemo/Index.cshtml", 1)</div>
+    <div data-caption="grid controller">@Html.Csource("Awesome/Grid/LunchGridController.cs")</div>
+    <div data-caption="demo controller">@Html.Csource("Demos/Grid/GridNestingDemoController.cs", 1)</div>
+    <div data-caption="LunchDetail view">@Html.Source("GridNestingDemo/LunchDetail.cshtml")</div>
+</div>
+
+<h2>Nested grids / Hierarchy</h2>
+the url of the nest points to an action that will render another grid, it also receives the key of the row (Id) as a parameter to filter it's content
+@*begin2*@
+@(Html.Awe().Grid("CategoriesGrid")
+        .Groupable(true)
+        .Resizable(true)
+        .Url(Url.Action("CategoriesGrid", "CascadingGridDemo"))
+        .Columns(new Column { Bind = "Name", ClientFormat = "<div class='detailbtn'><i class='ui-icon ui-icon-triangle-1-e awe-il'></i> .Name</div> " })
+        .Nests(new Nest { ButtonClass = "detailbtn", Url = Url.Action("MealGrid"), LoadOnce = true }))
+@*end2*@
+
+<div class="tabs code">
+    <div data-caption="demo view">@Html.Source("GridNestingDemo/Index.cshtml", 2)</div>
+    <div data-caption="demo controller">@Html.Csource("Demos/Grid/GridNestingDemoController.cs")</div>
+    <div data-caption="inner grid markup view">@Html.Source("GridNestingDemo/MealGrid.cshtml", 2)</div>
+    <div data-caption="grids controller">@Html.Csource("Demos/Grid/CascadingGridDemoController.cs")</div>
+</div>
+
+<h2>In nest editing grid</h2>
+
+@*begin3*@
+@Html.InitCrudForGridNest("NestDinnersGrid", "DinnersGridCrud")
+
+<div class="bar">
+    <button type="button" onclick="utils.nestCreate('NestDinnersGrid', 'createNestDinnersGrid')" class="awe-btn mbtn">Create</button>
+</div>
+
+@(Html.Awe().Grid("NestDinnersGrid")
+                .Url(Url.Action("GridGetItems", "DinnersGridCrud"))
+                .Mod(o => o.ColumnsAutohide())
+                .Height(0)
+                .PageSize(10)
+                .Nests(
+                    new Nest { ButtonClass = "editnst", GetFunc = "utils.loadNestPopup('editNestDinnersGrid')" },
+                    new Nest { ButtonClass = "delnst", GetFunc = "utils.loadNestPopup('deleteNestDinnersGrid')" })
+                .Columns(
+                        new Column { Bind = "Id", Width = 70 },
+                        new Column { Bind = "Name" }.Mod(o => o.NoAutohide()),
+                        new Column { Bind = "Date" },
+                        new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" },
+                        new Column { ClientFormat = ".Meals", Header = "Meals" },
+                        new Column { ClientFormat = GridUtils.EditGridNestFormat(), Width = 50 }.Mod(o => o.Nohide()),
+                        new Column { ClientFormat = GridUtils.DeleteGridNestFormat(), Width = 50 }.Mod(o => o.Nohide())))
+
+@*utils.loadNestPopup is using the inlinePopup and needs utils.init to be called ( called in _Layout.cshtml )*@
+<style>
+    .awe-btn.awe-on {
+        outline: gray auto 5px;
+    }
+</style>
+@*end3*@
+<div class="tabs code">
+    <div data-caption="description" class="expl">
+        Combining the PopupForm, inline popup, and grid nesting to achieve in nest editing. We have 2 nests, both with js functions specified for loading the content,
+        the js func uses the popup api to load the content inside the nest and binds to the popups aweclose event so that the nest will close when the popup closes.
+        All the popups are in the same group so opening a create popup will close other edit/delete popups etc.
+    </div>
+    <div data-caption="view">@Html.Source("GridNestingDemo/Index.cshtml", 3)</div>
+</div>

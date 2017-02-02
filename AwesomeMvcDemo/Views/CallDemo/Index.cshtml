@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Call Demo";
+}
+<h3>Call</h3>
+@*begin*@
+@Html.Awe().InitCall("callHi").Url(Url.Action("SayHi")).Success("echo")
+@Html.Awe().InitCall("callName").Url(Url.Action("SayName")).Success("echo").Parent("txtName", "name")
+
+<button type="button" class="awe-btn" onclick="awe.oc('callHi')">Click to call</button>
+<br />
+<br />
+<button type="button" class="awe-btn" onclick="awe.oc('callName', { params: { id: 15 } })">Call with parameters</button>
+<br />
+<br />
+@Html.Awe().TextBox("txtName").Placeholder("write a name here").Value("Art Vandelay")
+
+<script>
+    function echo(res) {
+        alert(res);
+    }
+</script>
+@*end*@
+<br />
+<br />
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        InitCall helper initiates a server call that can be executed using awe.oc(name, opt) js function, 
+            similar to awe.open(name, opt) used for opening popups
+    </div>
+    <div data-caption="view">
+        @Html.Source("CallDemo/Index.cshtml")
+    </div>
+    <div data-caption="controller">
+        @Html.Csource("Demos/Helpers/CallDemoController.cs")
+    </div>
+</div>
+
+
+

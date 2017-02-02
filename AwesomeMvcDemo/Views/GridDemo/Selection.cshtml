@@ -1,0 +1,133 @@
+﻿@{
+    ViewBag.Title = "ASP.net MVC Awesome Grid Selection Demo";
+}
+
+<h3>Grid Selection</h3>
+<h2>Multicheck select</h2>
+<p>select multiple rows by clicking on them, you can also use Shift to select/deselect multiple rows</p>
+@*begin*@
+@(Html.Awe().Grid("MultiCheckSelectGrid")
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Height(350)
+                .Selectable(SelectionType.Multicheck)
+                .Columns(
+                new Column { Bind = "Id", Width = 55 },
+                new Column { Bind = "Person" },
+                new Column { Bind = "Food" },
+                new Column { Bind = "Price", Width = 100 },
+                new Column { Bind = "Location" }))
+
+<fieldset>
+    <legend>selection</legend>
+    <div id="selection" class="wwrap"></div>
+</fieldset>
+<script>
+    $(function () {
+        $('#MultiCheckSelectGrid')
+            .on('aweselect', function () {
+                var selectedItems = $('#MultiCheckSelectGrid').data('api').getSelection();
+                $('#selection').html(JSON.stringify(selectedItems));
+            })
+            .on('aweload', function () {
+                $('#selection').empty();
+            });
+    });
+</script>
+@*end*@
+@Html.Source("GridDemo/Selection.cshtml", wrap:true)
+
+
+<h2>Single select</h2>
+<p>select one row by clicking on it</p>
+@*begin1*@
+@(Html.Awe().Grid("SingleSelectGrid")
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Height(350)
+                .Selectable(SelectionType.Single)
+                .Columns(
+                new Column { Bind = "Id", Width = 55 },
+                new Column { Bind = "Person" },
+                new Column { Bind = "Food" },
+                new Column { Bind = "Price", Width = 100 },
+                new Column { Bind = "Location" }))
+
+<fieldset>
+    <legend>selection</legend>
+    <div id="selection1" class="wwrap"></div>
+</fieldset>
+<script>
+    $(function () {
+        $('#SingleSelectGrid')
+            .on('aweselect', function () {
+                var selectedItems = $('#SingleSelectGrid').data('api').getSelection();
+                $('#selection1').html(JSON.stringify(selectedItems));
+            })
+            .on('aweload', function () {
+                $('#selection1').empty();
+            });
+    });
+</script>
+@*end1*@
+
+
+@Html.Source("GridDemo/Selection.cshtml", 1, true)
+
+
+<h2>Multiselect</h2>
+<p>use click, ctrl+click, shift+click, ctrl+shift+click to select multiple rows</p>
+@*beginm*@
+@(Html.Awe().Grid("MultiselectGrid")
+                .CssClass("keynav")
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Height(400)
+                .Selectable(SelectionType.Multiple)
+                .Columns(
+                new Column { Bind = "Id", Width = 55 },
+                new Column { Bind = "Person"},
+                new Column { Bind = "Food" },
+                new Column { Bind = "Price", Width = 100 },
+                new Column { Bind = "Location" }))
+<br/>
+<button id="btnSelectAll" class="awe-btn">select all</button>
+<button id="btnDeselectAll" class="awe-btn">deselect all</button>
+<button id="btnSelectByPrice" class="awe-btn">select where price > 50</button>
+
+<fieldset>
+    <legend>selection</legend>
+    <div id="selection2" class="wwrap"></div>
+</fieldset>
+<script>
+    $(function () {
+        $('#MultiselectGrid')
+            .on('aweselect', function () {
+                var selectedItems = $('#MultiselectGrid').data('api').getSelection();
+                $('#selection2').html(JSON.stringify(selectedItems));
+            })
+            .on('aweload', function () {
+                $('#selection2').empty();
+            });
+
+        $('#btnSelectAll').click(function () {
+            $('#MultiselectGrid .awe-row').addClass('awe-selected');
+            $('#MultiselectGrid').trigger('aweselect');
+        });
+
+        $('#btnDeselectAll').click(function () {
+            $('#MultiselectGrid .awe-row').removeClass('awe-selected');
+            $('#MultiselectGrid').trigger('aweselect');
+        });
+
+        $('#btnSelectByPrice').click(function () {
+            $('#MultiselectGrid .awe-row').removeClass('awe-selected').each(function (ix, item) {
+                if ($(item).data('model').Price > 50) {
+                    $(item).addClass('awe-selected');
+                }
+            });
+
+            $('#MultiselectGrid').trigger('aweselect');
+        });
+    });
+</script>
+@*endm*@
+
+@Html.Source("GridDemo/Selection.cshtml","m", true)

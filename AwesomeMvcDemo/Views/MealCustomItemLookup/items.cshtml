@@ -1,0 +1,14 @@
+﻿@model IEnumerable<AwesomeMvcDemo.Models.Meal>
+@{ Layout = null; }
+@foreach (var o in Model)
+{
+    <li class="awe-li" data-val="@(o.Id)">Name: @o.Name
+        <br />
+        Category: @o.Category.Name
+        <br />
+        Description: @o.Description
+        <br />
+        <button onclick="awe.open('details', { params:{ id: @o.Id }})" class="awe-btn awe-nonselect">Details</button>
+    </li>
+}
+

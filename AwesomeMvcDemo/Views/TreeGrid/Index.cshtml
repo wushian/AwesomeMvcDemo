@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "Tree Grid Demo - ASP.net MVC Awesome jQuery Ajax Helpers";
+}
+
+<h2>Tree Grid Demo</h2>
+Tree grid is achieved by setting the GridModelBuilder.GetChildren, 
+    this function should return an IQueryable&lt;T&gt; when the item is a node, or an Awe.Lazy when its a lazy node.
+    For lazy loading GetItem also needs to be set, it will be executed in the lazy request, GetItem is also used by the api.updateItem.
+    In the constructor of the GridModelBuilder only root items are set.
+
+    <h3>Tree grid, basic features</h3>
+simple tree grid, without lazy loading
+    @*begin1*@
+@(Html.Awe().Grid("TreeGrid1")
+            .Url(Url.Action("SimpleTree", "TreeGrid"))
+            .Columns(
+                new Column { Bind = "Name" },
+                new Column { Bind = "Id", Width = 100 })
+            .Persistence(Persistence.View)
+            .Groupable(false)
+            .PageSize(3)
+            .Height(400)
+)
+@*end1*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("TreeGrid/Index.cshtml", 1)</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/TreeGridController.cs", 1)</div>
+</div>
+
+<h3>Lazy loading Nodes, Tree Grid</h3>
+@*begin2*@
+@(Html.Awe().Grid("LazyTreeGrid")
+            .Url(Url.Action("LazyTree", "TreeGrid"))
+            .Columns(
+                new Column { Bind = "Name" },
+                new Column { Bind = "Id", Width = 100 })
+            .Persistence(Persistence.View)
+            .ColumnsPersistence(Persistence.Session)
+            .PageSize(3)
+            .Height(400))
+@*end2*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("TreeGrid/Index.cshtml", 2)</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/TreeGridController.cs", 2)</div>
+</div>
+
+<h3>Tree Grid with CRUD operations</h3>
+
+@*begin3*@
+@(Html.Awe().InitPopupForm()
+                .Name("createNode")
+                .Height(200)
+                .Group("tree")
+                .Url(Url.Action("Create", "TreeGrid"))
+                .Success("nodeCreated"))
+
+@(Html.Awe().InitPopupForm()
+                .Name("editNode")
+                .Height(200)
+                .Group("tree")
+                .Url(Url.Action("Edit", "TreeGrid"))
+                .Success("nodeUpdated"))
+
+@(Html.Awe().InitPopupForm()
+                .Name("deleteNode")
+                .Height(200)
+                .Modal(true)
+                .Group("tree")
+                .Url(Url.Action("Delete", "TreeGrid"))
+                .Success("nodeDeleted")
+                .OnLoad("utils.delConfirmLoad('CrudTreeGrid')")
+                .Parameter("gridId", "CrudTreeGrid"))
+
+<script>
+    // needed to handle crud when search criteria is present
+    // (e.g. if you add a child and update the node it might not show up because of the search criteria)
+    var nodesAdded = [];
+    $(function () {
+        $('#CrudTreeGrid').on('aweload', function () {
+            nodesAdded = [];
+        });
+    });
+
+    function nodeCreated(res) {
+        var $grid = $('#CrudTreeGrid');
+        nodesAdded.push(res.Node.Id);
+
+        //update parent if present of reload the grid with empty sorting and grouping rules
+        if (res.ParentId) {
+            var xhr = $grid.data('api').update(res.ParentId, { nodesAdded: nodesAdded });
+            $.when(xhr).done(function () {
+                $("#CrudTreeGrid [data-k=" + res.Id + "]").addClass("awe-changing").removeClass("awe-changing", 1000);
+            });
+        } else {
+            var $row = $grid.data('api').renderRow(res.Node, 1);// render row as lvl 1 (root)
+            $grid.find('.awe-tbody').prepend($row);
+        }
+    }
+
+    function nodeUpdated(res) {
+        var api = $('#CrudTreeGrid').data('api');
+        var xhr = api.update(res.Id);
+        $.when(xhr).done(function () {
+            var $row = api.select(res.Id)[0];
+            var altcl = $row.hasClass("awe-alt") ? "awe-alt" : "";
+            $row.switchClass(altcl, "awe-changing", 1).switchClass("awe-changing", altcl, 1000);
+        });
+    }
+
+    //remove the deleted node and its children 
+    function nodeDeleted(res) {
+        var rows = $('#CrudTreeGrid').data('api').select(res.Id);
+        var duration = rows.length > 3 ? 1000 : 500;
+        var promises = $.map(rows, function (row, i) {
+            return $.Deferred(function (dfd) {
+                row.fadeOut(duration - Math.min(700, i * 50), function () {
+                    row.remove();
+                    dfd.resolve();
+                });
+            });
+        });
+
+        $.when.apply($, promises).done(function () {
+            //reload grid when page empty
+            if (!$('#CrudTreeGrid .awe-row').length)
+                $('#CrudTreeGrid').data('api').load();
+
+            //update parent node, if there is one
+            if (res.ParentId) {
+                $('#CrudTreeGrid').data('api').update(res.ParentId, { nodesAdded: nodesAdded });
+            }
+        });
+    }
+</script>
+
+<div class="bar">
+    <button type="button" class="awe-btn" style="float: left;" onclick="awe.open('createNode')">add root</button>
+    <div style="text-align: right;">
+        @Html.Awe().TextBox("txtname").Placeholder("search...").CssClass("searchtxt")
+    </div>
+</div>
+
+@(Html.Awe().Grid("CrudTreeGrid")
+           .Url(Url.Action("CrudTree", "TreeGrid"))
+           .Columns(
+               new Column { Bind = "Name" },
+               new Column { Bind = "Id", Width = 100 },
+               new Column { ClientFormat = GridUtils.AddChildFormat(), Width = 100 },
+               new Column { ClientFormat = GridUtils.EditFormat("editNode"), Width = 50 },
+               new Column { ClientFormat = GridUtils.DeleteFormat("deleteNode"), Width = 50 })
+           .Persistence(Persistence.View)
+           .ColumnsPersistence(Persistence.Session)
+           .Reorderable(true)
+           .Resizable(true)
+           .PageSize(3)
+           .Parent("txtname", "name")
+           .Height(400))
+@*end3*@
+
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("TreeGrid/Index.cshtml", 3)</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/TreeGridController.cs", 3)</div>
+</div>
+
+<h3>Use as TreeView</h3>
+The menu on the left is a TreeGrid with hidden footer and header.
+    
+<div class="tabs code">
+    <div data-caption="view">@Html.Source("Shared/_Layout.cshtml")</div>
+</div>

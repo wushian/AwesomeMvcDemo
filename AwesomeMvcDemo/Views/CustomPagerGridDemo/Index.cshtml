@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Grid with Custom Pager, pager at both top and bottom of the grid";
+}
+<h2>Grid custom pager demo</h2>
+@*begin*@
+<div class="expl">
+    using mods to change the pager<br/>
+    you can see the first pager on the home page or grid demo (quick view) if you resize your browser screen to less than 1000px width
+</div>
+<br />
+@(Html.Awe().Grid("Grid")
+                .Mod("awem.gridMiniPager")
+                .Columns(
+                    new Column { Bind = "Id", Width = 75, Groupable = false },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Location" })
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Height(300))
+<br />
+<h3>Grid with pager at both top and bottom</h3>
+
+@(Html.Awe().Grid("Grid2")
+                .Mod("pagerBoth")
+                .Columns(
+                    new Column { Bind = "Id", Width = 75, Groupable = false },
+                    new Column { Bind = "Person" },
+                    new Column { Bind = "Food" },
+                    new Column { Bind = "Location" })
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Height(300))
+
+<script>
+    function pagerBoth(o) {
+        var $grid = o.v;
+        var clone = $grid.find('.awe-footer').clone(true);
+        clone.addClass('topFooter');
+        $grid.prepend(clone);
+    }
+</script>
+<style>
+    .awe-grid .awe-footer.topFooter
+    {
+        border-top: none;
+        border-bottom: 1px solid gainsboro;
+    }
+</style>
+@*end*@
+@Html.Source("CustomPagerGridDemo/Index.cshtml", wrap: true)
+
+

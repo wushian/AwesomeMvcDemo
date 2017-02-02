@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Grid Multirow Header Groups Demo";
+}
+<h1>Grid MultiRow Header Groups</h1>
+@*begin1*@
+
+@(Html.Awe().Grid("GridHg")
+    .Mod(o => o.PageInfo().PageSize().AutoMiniPager().ColumnsSelector().ColumnsAutohide())
+    .HeaderGroups(
+        new HeaderGroup { Content = "Main details", Level = 0, Id = "main" },
+        new HeaderGroup { Content = "Dinner details", Level = 0, Id = "dinfo" },
+        new HeaderGroup { Content = "Chef", Id = "chef", Level = 1 },
+        new HeaderGroup { Content = "Address", Id = "addr", Level = 1 })
+    .Columns(
+        new Column { Bind = "Id", Width = 75, Groupable = false, Resizable = false },
+        new Column { Bind = "Person", HeaderGroups = new[] { "main" } },
+        new Column { Bind = "Food", HeaderGroups = new[] { "main" } },
+        new Column { Bind = "Price", Width = 100 },
+        new Column { Bind = "Date", Width = 120, HeaderGroups = new[] { "dinfo" } },
+        new Column { Bind = "Location", HeaderGroups = new[] { "dinfo", "addr" } },
+        new Column { Bind = "Country.Name", ClientFormat = ".CountryName", Header = "Country", HeaderGroups = new[] { "dinfo", "addr" } },
+        new Column { Bind = "Chef.FirstName", ClientFormat = ".ChefFName", Header = "First Name", HeaderGroups = new[] { "dinfo", "chef" } },
+        new Column { Bind = "Chef.LastName", ClientFormat = ".ChefLName", Header = "Last Name", HeaderGroups = new[] { "dinfo", "chef" } })
+    .Url(Url.Action("GridGetItems"))
+    .Resizable(true)
+    .Reorderable(true)
+    .Height(400))
+@*end1*@
+
+<div class="tabs code">
+    <div data-caption="view">
+        @Html.Source("GridMultiRowHeaderGroups/Index.cshtml", 1)
+    </div>
+</div>

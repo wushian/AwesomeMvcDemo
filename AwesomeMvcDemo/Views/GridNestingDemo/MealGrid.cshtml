@@ -1,0 +1,14 @@
+﻿<div style="margin: 5px;">
+    @(Html.Awe().Grid("MealsGrid" + ViewData["Id"]) // please note, you need to have unique html ids
+        .Groupable(true)
+        .Url(Url.Action("MealsGrid", "CascadingGridDemo"))
+        .Columns(
+        new Column { Bind = "Id", Width = 50 },
+        new Column { Bind = "Name", Width = 150 },
+        new Column { Bind = "Description" })
+        .PersistenceKey("MealsCascade")
+        .ColumnsPersistence(Persistence.View)
+        .Resizable(true)
+        .Parameter("categories", ViewData["Id"]))
+</div>
+

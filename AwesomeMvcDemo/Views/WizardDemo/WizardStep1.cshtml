@@ -1,0 +1,15 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.Wizard.Step1Model
+<div class="wizardForm">
+    <div id="wizardData" style="height: 200px;">
+        @using (Html.BeginForm())
+        {
+            <div class="expl">Hi, please write a name and select a category </div>
+
+            @Html.EditorFor(o => o.Name)
+            @Html.EditorFor(o => o.CategoryId)
+        }
+    </div>
+    <div style="text-align: center;">
+        <input type="submit" value="Continue" class="awe-btn mbtn" onclick="$('#wizardData form').submit()" style="width: 100px;" />
+    </div>
+</div>

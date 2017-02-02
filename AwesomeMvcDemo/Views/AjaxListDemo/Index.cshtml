@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "AjaxList Demo";
+}
+
+<h2>AjaxList Demo</h2>
+<br />
+@*begin*@
+@Html.Awe().TextBox("txtSearch").CssClass("searchtxt").Placeholder("search...")
+<br />
+<br />
+@(Html.Awe().AjaxList("Meals")
+            .Parent("txtSearch"))
+@*end*@
+<br />
+<div class="expl">
+    by default the AjaxList will try to get data from the Search action of a controller
+    with same name as it + "AjaxList" but a different Url or controller can be specified
+    using .Url or .Controller extensions
+</div>
+<br />
+
+<div class="tabs">
+    <div data-caption="view">@Html.Source("AjaxListDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Awesome/AjaxList/MealsAjaxListController.cs")</div>
+</div>
+
+
+

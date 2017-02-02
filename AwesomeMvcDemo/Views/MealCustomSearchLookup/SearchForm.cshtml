@@ -1,0 +1,8 @@
+﻿@using AwesomeMvcDemo.Models
+@{ Layout = null; }
+<div class="srcfitem">
+    @Html.Awe().TextBox("Search").CssClass("awe-searchtxt").Placeholder("search")
+</div>
+<div class="srcfitem">
+    @(Html.Awe().Odropdown("Categories").Url(Url.Action("GetCategories", "Data")).Value(Db.Categories.First().Id).Prefix("MealLookup"))
+</div>

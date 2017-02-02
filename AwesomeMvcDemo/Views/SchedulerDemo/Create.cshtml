@@ -1,0 +1,29 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.MeetingInput
+
+@using (Html.BeginForm())
+{
+    @Html.EditorFor(o => o.Title)
+    @Html.EditorFor(o => o.AllDay)
+    @Html.EditorFor(o => o.Start)
+    <div class="timeEditor" style="@(Model.AllDay ? "display:none" : "")">
+        @Html.EditorFor(o => o.StartTime)
+    </div>
+    @Html.EditorFor(o => o.End)
+    <div class="timeEditor" style="@(Model.AllDay ? "display:none" : "")">
+        @Html.EditorFor(o => o.EndTime)
+    </div>
+    @Html.EditorFor(o => o.Color)
+    @Html.EditorFor(o => o.Location)
+    @Html.EditorFor(o => o.Notes)
+}
+@Html.ValidationSummary(true)
+<script>
+    $(function () {
+        $('#AllDay').click(function () {
+            if ($(this).is(':checked'))
+                $('.timeEditor').hide();
+            else
+                $('.timeEditor').show();
+        });
+    });
+</script>

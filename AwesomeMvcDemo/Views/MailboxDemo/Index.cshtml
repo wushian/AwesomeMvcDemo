@@ -1,0 +1,212 @@
+﻿@{
+    ViewBag.Title = "Awesome Grid Demo - mail message";
+}
+
+@*begin*@
+<h3>Grid Demo - Mailbox messages</h3>
+<div class="bar">
+    @Html.Awe().AjaxRadioList("selectMenu").MenuDropdown(o => o.Caption("<div id='mainCheck' class='chkbox'></div>").MinWidth(3)).DataFunc("selectMenuData")
+
+    <div class="actbar awe-il">
+        <button type="button" class="awe-btn" id="btnRefresh">Refresh</button>
+    </div>
+    <div class="selActions awe-il buttonGroup" style="display: none; line-height: 1.1em;">
+        <button type="button" id="btnDelete" class="awe-btn">Delete</button>
+        <button type="button" id="btnMarkRead" class="awe-btn">Mark as read</button>
+        <button type="button" id="btnMarkUnread" class="awe-btn">Mark as unread</button>
+    </div>
+</div>
+
+@(Html.Awe().Grid("MessagesGrid")
+                .Url(Url.Action("GetItems", "MessagesGrid"))
+                .Mod(o => o.MiniPager().PageInfo())
+                .ShowHeader(false)
+                .ShowGroupBar(false)
+                .CssClass("mboxg")
+                .Selectable(SelectionType.Multicheck, ".sel")
+                .RowClassClientFormat(".RowClass")
+                .Columns(
+                    new Column { ClientFormat = "<div class='chkbox'></div>", Width = 38, CssClass = "sel" },
+                    new Column { Bind = "From", Width = 150, ClientFormat = ".Subject" },
+                    new Column { ClientFormat = ".From <span class='bodytext'>.Body</span>" }.Mod(o => o.Autohide()),
+                    new Column { Bind = "DateReceived", Sort = Sort.Desc, Width = 125 }))
+
+@Html.Awe().InitPopup().Name("ReadMessage").Url(Url.Action("ReadMessage")).Modal().Mod(o => o.OutClickClose())
+@Html.Awe().InitCall("markRead").Url(Url.Action("MarkRead")).Success("mbox.reload")
+@Html.Awe().InitCall("markUnread").Url(Url.Action("MarkUnread")).Success("mbox.reload")
+@Html.Awe().InitCall("delete").Url(Url.Action("Delete")).Success("mbox.reload")
+
+<script type="text/javascript">
+    var lastSelIds;
+    var $grid = $('#MessagesGrid');
+
+    function selectMenuData() {
+        return [
+            { c: 'All', click: 'mbox.selectAll()' },
+            { c: 'None', click: 'mbox.deselectAll()' },
+            { c: 'Read', click: 'mbox.selectRead()' },
+            { c: 'Unread', click: 'mbox.selectUnread()' }
+        ];
+    }
+
+    var mbox = function ($g) {
+        var scls = 'awe-selected';
+        return {
+            selIds: function () {
+                return $.map($g.data('api').getSelection(), function (o) { return o.Id; });
+            },
+
+            reload: function () {
+                $g.data('api').load();
+            },
+
+            selectAll: function () {
+                $g.find('.awe-row').addClass(scls);
+                $g.trigger('aweselect');
+            },
+
+            deselectAll: function () {
+                $g.find('.awe-row').removeClass(scls);
+                $g.trigger('aweselect');
+            },
+
+            selectRead: function () {
+                $g.find('.awe-row').removeClass(scls).each(function (_, item) {
+                    if ($(item).data('model').IsRead) {
+                        $(item).addClass(scls);
+                    }
+                });
+                $g.trigger('aweselect');
+            },
+
+            selectUnread: function () {
+                $g.find('.awe-row').removeClass(scls).each(function (_, item) {
+                    if (!$(item).data('model').IsRead) {
+                        $(item).addClass(scls);
+                    }
+                }).trigger('aweselect');
+            }
+        };
+    }($grid);
+
+
+    $(function () {
+        var $mainCheck = $('#mainCheck');
+
+        $mainCheck.click(function () {
+            if ($mainCheck.hasClass('selected') || $mainCheck.hasClass('partselected')) {
+                mbox.deselectAll();
+            } else {
+                mbox.selectAll();
+            }
+
+            $('#selectMenu').data('api').close();
+            return false;
+        });
+
+        //buttons
+        $('#btnMarkRead').click(function () {
+            awe.oc('markRead', { params: { ids: mbox.selIds() } });
+        });
+
+        $('#btnMarkUnread').click(function () {
+            awe.oc('markUnread', { params: { ids: mbox.selIds() } });
+        });
+
+        $('#btnDelete').click(function () {
+            awe.oc('delete', { params: { ids: mbox.selIds() } });
+        });
+
+        $('#btnRefresh').click(mbox.reload);
+
+        // grid row click open message
+        $grid.on('click', '.awe-row', function (e) {
+            if (!$(e.target).closest('.sel').length) {
+                var $row = $(this).closest('.awe-row');
+                awe.open('ReadMessage', { params: { id: $row.data('model').Id } });
+                mbox.reload();
+            }
+        });
+
+        $grid.on('aweselect', function () {
+            lastSelIds = mbox.selIds();
+            $mainCheck.removeClass('selected partselected');
+            $('.selActions').show();
+            var cls = '';
+
+            if (lastSelIds.length && $grid.find('.awe-row').length == lastSelIds.length) {
+                cls = 'selected';
+            }
+            else if (lastSelIds.length > 0) {
+                cls = 'partselected';
+            } else {
+                $('.selActions').hide();
+            }
+
+            $mainCheck.addClass(cls);
+        });
+
+        // maintain selection on reload
+        $grid.on('aweload', function () {
+            if (lastSelIds) {
+                $grid.find('.awe-row')
+                    .each(function(i, row) {
+                        if ($.inArray($(row).data('model').Id, lastSelIds) > -1) {
+                            $(row).addClass('awe-selected');
+                        }
+                    });
+
+                $grid.trigger('aweselect');
+            }
+        });
+    });
+</script>
+
+<style>
+    .readItem {
+        cursor: pointer;
+    }
+
+    .notRead {
+        font-weight: bold;
+    }
+
+    .bodytext {
+        color: gray;
+        font-weight: normal;
+    }
+
+    .sel {
+        cursor: default;
+    }
+
+    .mboxg .awe-row {
+        cursor: pointer;
+        font-family: arial, sans-serif;
+    }
+
+    .mboxg .awe-relbox {
+        display: none;
+    }
+
+    .mboxg .awe-row td {
+        border-right: none;
+    }
+
+    .mboxg .awe-footer {
+        border: none;
+    }
+
+    .actbar {
+        line-height: 2em;
+        font-size: 0.9em;
+    }
+
+        .actbar .awe-btn {
+            padding: 2px 10px;
+        }
+</style>
+@*end*@
+<div class="code">
+    @Html.Source("MailboxDemo/Index.cshtml")
+</div>

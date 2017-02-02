@@ -1,0 +1,33 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.AttributesDemoInput
+@{
+    ViewBag.Title = "Attributes and editorfor helpers";
+}
+<h1>Attributes demo</h1>
+<div class="expl">
+    This view uses only EditorFor helpers, and parameters for the helpers are set using. AdditionalMetadata attribute can be used to set any property of the helper.
+</div>
+@*begin*@
+@using (Html.BeginForm())
+{
+    @Html.EditorFor(o => o.Number)
+    @Html.EditorFor(o => o.ParentCategory)
+    @Html.EditorFor(o => o.Meal1)
+    @Html.EditorFor(o => o.Meal2)
+    @Html.EditorFor(o => o.MealCustomSearch)
+    @Html.EditorFor(o => o.SomeMeals)
+    @Html.EditorFor(o => o.SomeCategories)
+    @Html.EditorFor(o => o.MealAuto)
+    @Html.EditorFor(o => o.MealId)
+    @Html.EditorFor(o => o.Date)
+    <input type="submit" value="submit" class="awe-btn" />
+}
+@*end*@
+<br />
+
+<div class="tabs">
+    <div data-caption="view">@Html.Source("AttributesDemo/Index.cshtml")</div>
+    <div data-caption="viewmodel">@Html.Csrc("ViewModels/Input/AttributesDemoInput.cs")</div>
+</div>
+
+
+

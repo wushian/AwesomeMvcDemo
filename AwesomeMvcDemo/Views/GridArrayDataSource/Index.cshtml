@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "Grid using Array datasource";
+}
+<h2>Grid using Array datasource</h2>
+@*begin*@
+@Html.Awe().Grid("GridArrayData").Url(Url.Action("GridGetItems"))
+
+<script>
+    function getVal(i) {
+        return function (model) {
+            return model.Values[i];
+        };
+    }
+</script>
+@*end*@
+
+<div class="tabs code">
+    <div data-caption="view">
+        @Html.Source("GridArrayDataSource/Index.cshtml")
+    </div>
+    <div data-caption="controller">
+        @Html.Csource("Demos/Grid/GridArrayDataSourceController.cs")
+    </div>
+    <div data-caption="viewmodel">
+        @Html.Csrc("ViewModels/GridArrayRow.cs")
+    </div>
+</div>
+
+

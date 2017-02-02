@@ -1,0 +1,107 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.LookupDemoInput
+
+@using AwesomeMvcDemo.Controllers.Awesome.Lookup
+@using AwesomeMvcDemo.Controllers.Awesome.MultiLookup
+@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Lookup Demo Misc";
+}
+
+<h3>Lookup with Custom Item template</h3>
+<div class="expl">
+    The Search action of the LookupController returns json of AjaxListResult, so doing
+    Custom Item Template and Table Layout is exactly the same as for the AjaxList helper
+</div>
+<div class="efield">
+    <div class="elabel">
+        Meal:
+    </div>
+    <div class="einput">
+        @Html.Awe().LookupFor(o => o.MealCustomItem).Fullscreen().CustomSearch()
+    </div>
+</div>
+
+<h3>Lookup with Table Layout</h3>
+<div class="efield">
+    <div class="elabel">
+        Meal table:
+    </div>
+    <div class="einput">
+        @Html.Awe().LookupFor(o => o.MealTableLayout).Fullscreen().TableLayout().Tag(new { target = "MealTableLayoutTarget" })
+    </div>
+</div>
+<div id="MealTableLayoutTarget"></div>
+<br />
+
+<h3>Lookup bound to many parents</h3>
+<div class="expl">
+    Binding to parents and setting predefined parameters is done the same as for
+    the AjaxDropdown using .Parent() and .Parameter(), values are passed to both GetItem and Search actions
+</div>
+<div class="efield">
+    <div class="elabel">
+        Parent Categories:
+    </div>
+    <div class="einput">
+        @(Html.Awe().MultiLookupFor(o => o.CategoriesData)
+                .Controller<CategoriesMultiLookupController>()
+                .ClearButton())
+    </div>
+</div>
+<div class="efield">
+    <div class="elabel">
+        Parent Category:
+    </div>
+    <div class="einput">
+        @Html.Awe().AjaxDropdownFor(o => o.Category).Url(Url.Action("GetCategories", "Data"))
+    </div>
+</div>
+<div class="efield">
+    <div class="elabel">
+        Child Meal:
+    </div>
+    <div class="einput">
+        @(Html.Awe().LookupFor(o => o.ChildOfMany)
+                .Parent(o => o.CategoriesData, "categories")
+                .Parent(o => o.Category, "categories")
+                .Controller<MealCustomSearchLookupController>()
+)
+    </div>
+</div>
+
+<h3>Setting predefinded parameters</h3>
+@{
+    var cat0 = Db.Categories[0];
+    var cat1 = Db.Categories[1];
+}
+<div class="efield">
+    <div class="elabel">
+        Meal1 (categories = @cat1.Name):
+    </div>
+    <div class="einput">
+        @(Html.Awe().LookupFor(o => o.Meal1)
+                .Parameter("categories", cat1.Id)
+                .Controller<MealCustomSearchLookupController>()
+)
+    </div>
+</div>
+
+<div class="efield">
+    <div class="elabel">
+        Meal1 (categories = {@cat0.Name,@cat1.Name}):
+    </div>
+    <div class="einput">
+        @(Html.Awe().LookupFor(o => o.Meal2)
+                .Parameter("categories", new[] { cat0.Id })
+                .Controller<MealCustomSearchLookupController>()
+                .ParameterFunc("giveParams")
+)
+    </div>
+</div>
+<script>
+    function giveParams() {
+        return { categories: @(cat1.Id) };
+        }
+</script>
+
+

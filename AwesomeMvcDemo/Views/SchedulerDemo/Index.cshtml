@@ -1,0 +1,142 @@
+﻿@using Omu.Awem.Scheduler
+@{
+    ViewBag.Title = "Scheduler, built using Awesome Grid and PopupForm";
+}
+<h2>Scheduler Demo</h2>
+
+Scheduler built using the awesome Grid, AjaxRadioList and PopupForm helpers.<br />
+<br />
+
+@(Html.Awe().InitPopupForm()
+            .Name("createMeeting")
+            .Group("scheduler")
+            .Height(570)
+            .Url(Url.Action("Create"))
+            .ParameterFunc("utils.getMinutesOffset")
+            .Success("utils.refreshGrid('Schedule1')"))
+
+@(Html.Awe().InitPopupForm()
+            .Name("editMeeting")
+            .Group("scheduler")
+            .Height(570)
+            .Url(Url.Action("Edit"))
+            .ParameterFunc("utils.getMinutesOffset")
+            .Success("utils.refreshGrid('Schedule1')"))
+
+@(Html.Awe().InitPopupForm()
+            .Name("deleteMeeting")
+            .Group("scheduler")
+            .Height(200)
+            .Url(Url.Action("Delete"))
+            .Success("utils.refreshGrid('Schedule1')"))
+
+<button class="awe-btn mbtn" onclick="awe.open('createMeeting')">Create</button>
+
+<div class="scheduler" style="border: 1px solid gainsboro;">
+    <div class="schedBar awe-default">
+        <div class="buttonGroup">
+            <button class="awe-btn todaybtn">Today</button><button type="button" class="awe-btn prevbtn">< </button><button type="button" class="awe-btn nextbtn">> </button>
+        </div>
+
+        @Html.Awe().DatePicker("Date").CssClass("schedDate").HtmlAttributes(null, new { tabindex = -1 })
+
+        <span class="dateLabel"></span>
+        <div style="float: right;">
+            @(Html.Awe().AjaxRadioList("ViewType")
+                    .CssClass("viewType")
+                    .ButtonGroup()
+                    .Url(Url.Action("GetViewTypes")))
+        </div>
+    </div>
+
+    @(Html.Awe().Grid("Schedule1")
+                 .Height(450)
+                 .ShowFooter(false)
+                 .ShowGroupedColumn(false)
+                 .RowClassClientFormat(".RowClass")
+                 .CssClass("schedulerGrid")
+                 .Url(Url.Action("ScheduleGetItems"))
+                 .Parent("ViewType", "viewType")
+                 .Parent("HoursType", "hoursType")
+                 .Parent("HourStep", "hourStep")
+                 .Parent("Date", "date")
+                 .ParameterFunc("utils.getMinutesOffset"))
+
+    <div class="schedBotBar awe-default">
+        @(Html.Awe().AjaxRadioList("HoursType")
+                    .Mod("awem.odropdown")
+                    .Value(SchedulerHour.FullDay)
+                    .Url(Url.Action("GetHoursTypes")))
+
+        @(Html.Awe().AjaxRadioList("HourStep")
+                    .Odropdown(o => o.InLabel("Step: "))
+                    .Value(60)
+                    .Url(Url.Action("GetHourSteps")))
+    </div>
+</div>
+
+<script>
+    $(function () {
+        utils.scheduler('Schedule1', 'Meeting');// gridId, popupName (create|edit|delete + 'Meeting')
+    });
+
+    function buildCell(i) {
+        return function (row) {
+            var cell = row.Cells[i];
+            if (!cell) return "";
+            var result = "<div data-ticks='" + cell.Ticks + "' data-allday='" + row.AllDay + "' class='timePart' >";
+
+            if (cell.Day) {
+                result += "<div class='awe-il'><span class='day' data-date='" + cell.Date + "'>" + cell.Day + "</span></div>";
+            }
+
+            if (cell.Events) {
+                $.each(cell.Events, function (index, value) {
+                    var style = '';
+                    if (value.Color) {
+                        var color = 'fff';
+                        var bcolor = value.Color.replace('#', '');
+
+                        if (hexToVal(bcolor) > 530) {
+                            color = darken(bcolor);
+                        }
+
+                        style = 'style="background-color:' + value.Color + '; color:#' + color + ';"';
+                    }
+                    result += '<div class="schedEvent" data-id="' + value.Id + '" ' + style + '>'
+                        + (value.Time ? '<div class="time">' + value.Time + '</div>' : "")
+                        + '<button type="button" class="delEvent">X</button>'
+                        + '<div class="eventTitle">' + value.Title + '</div>'
+                        + '</div>';
+                });
+            }
+
+            result += '</div>';
+            return result;
+        };
+    }
+
+    function hexToVal(hex) {
+        var r = parseInt(hex.substr(0, 2), 16),
+            g = parseInt(hex.substr(2, 2), 16),
+            b = parseInt(hex.substr(4, 2), 16);
+        return r + g + b;
+    }
+
+    function darken(hex) {
+        var r = parseInt(hex.substr(0, 2), 16),
+            g = parseInt(hex.substr(2, 2), 16),
+            b = parseInt(hex.substr(4, 2), 16);
+
+        function f(c) {
+            var h = Math.max(0, c - 170).toString(16);
+            if (!h) h = '00';
+            if (h.length == 1) h = '0' + h;
+            return h;
+        }
+
+        return f(r) + f(g) + f(b);
+    }
+</script>
+
+

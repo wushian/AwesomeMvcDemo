@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Welcome to Area1</h2>
+@Html.ViewData["result"]
+<br/>
+<br/>
+@using (Html.BeginForm())
+{
+    @Html.Awe().TextBox("Name")<br/><br/>
+    @Html.Awe().Lookup("Meal")
+    <br /><br />
+    <input type="submit" value="submit" class="awe-btn"/>
+}

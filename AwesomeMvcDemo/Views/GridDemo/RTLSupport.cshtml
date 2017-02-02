@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "ASP.net MVC Awesome Grid RTL Support demo";
+}
+<h2>Grid RTL Support</h2>
+
+<p>The grid will detect if the html direction is rtl and construct itself accordingly</p>
+@*begin*@
+<div style="direction: rtl;">
+    @(Html.Awe().Grid("RtlGrid")
+                .Url(Url.Action("GetItems", "LunchGrid"))
+                .Height(300)
+                .Mod(o => o.ColumnsSelector().PageSize().PageInfo().MovableRows().Loading())
+                .Persistence(Persistence.View)
+                .Resizable(true)
+                .Reorderable(true)
+                .Columns(
+                new Column { Bind = "Id", Width = 55 },
+                new Column { Bind = "Person" },
+                new Column { Bind = "Food" },
+                new Column { Bind = "Price", Width = 100 },
+                new Column { Bind = "Location" }))
+
+    <br />
+    <br />
+    @(Html.Awe().Grid("RtlTreeGrid")
+            .Url(Url.Action("SimpleTree", "TreeGrid"))
+            .Columns(
+                new Column { Bind = "Name" },
+                new Column { Bind = "Id", Width = 100 })
+            .Persistence(Persistence.View)
+            .Groupable(false)
+            .PageSize(3)
+            .Height(300))
+</div>
+@*end*@
+<br />
+@Html.Source("GridDemo/RTLSupport.cshtml")
+
+

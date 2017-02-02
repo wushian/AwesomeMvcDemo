@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Grid CRUD Demo";
+}
+
+<h2>Grid CRUD Demo</h2>
+
+@*begin*@
+@Html.InitCrudPopupsForGrid("DinnersGrid", "DinnersGridCrud")
+
+<div class="bar">
+    <div style="float: right;">
+        @Html.Awe().TextBox("txtSearch").Placeholder("search...").CssClass("searchtxt")
+    </div>
+    <button type="button" onclick="awe.open('createDinnersGrid')" class="awe-btn mbtn">Create</button>
+</div>
+
+@(Html.Awe().Grid("DinnersGrid")
+            .Mod(o => o.PageInfo().ColumnsSelector())
+            .Url(Url.Action("GridGetItems", "DinnersGridCrud"))
+            .Parent("txtSearch", "search")
+            .Height(350)
+            .Columns(
+                new Column { Bind = "Id", Width = 55 },
+                new Column { Bind = "Name" },
+                new Column { Bind = "Date" },
+                new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef" },
+                new Column { ClientFormat = ".Meals", Header = "Meals" },
+                new Column { ClientFormat = GridUtils.EditFormatForGrid("DinnersGrid"), Width = 50 }.Mod(o => o.Nohide()),
+                new Column { ClientFormat = GridUtils.DeleteFormatForGrid("DinnersGrid"), Width = 50 }.Mod(o => o.Nohide())))
+@*end*@
+<br />
+<div class="tabs">
+    <div data-caption="description" class="expl">
+        Grid crud, built using the Grid and PopupForm helpers.
+            <br />
+        There's 3 PopupForms for create, edit and delete, they are initialized via InitCrudPopupsForGrid custom helper, each PopupForm has Success js function assigned, these functions are located in Utils.js. 
+    Create post action returns the grid model for the new Item so the js func will render and append it.<br />
+        Edit post action returns the item's Id and the js func is using grid.api.update to update the row, this is where the controller line:
+        <pre>GetItem = () => Db.Get&lt;Dinner>(Convert.ToInt32(g.Key))</pre>
+        is used.
+    <br />
+        Delete PopupForm has OnLoad js func used to animate the row that is about to be deleted, and the post action will delete the item and return the item's Id, 
+    the js func will use grid.api.select to select and remove the row, if there's no rows left grid.api.load will be called.
+    <br />
+        Create and Edit PopupForms are in the same Group (.Group("dinner")), this way when you open the edit view the create closes and the other way around. 
+    They are returning the same view (Create.cshtml) so opening both at the same time will give non unique ids for the Lookup/MultiLookup which will break them. 
+    Of course if you need to have both Edit and Create PopupForm open at the same time you can use .Prefix("prefix") on the helper to achieve unique ids.
+    <br />
+        <br />
+        Tip: make sure to use "return PartialView" for PopupForm/Popup views this will ignore _viewstart.cshtml so that you don't use the _Layout.cshtml and realod all the scripts, and as a result break the app.
+    </div>
+    <div data-caption="view">@Html.Source("GridCrudDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/DinnersGridCrudController.cs")</div>
+    <div data-caption="create view">@Html.Source("DinnersGridCrud/create.cshtml")</div>
+    <div data-caption="custom helper">@Html.Csrc("Helpers/Awesome/CrudHelpers.cs", "g")</div>
+    <div data-caption="grid utils">@Html.Csrc("Utils/GridUtils.cs")</div>
+</div>
+
+

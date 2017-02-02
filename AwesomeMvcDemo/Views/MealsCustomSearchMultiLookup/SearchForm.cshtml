@@ -1,0 +1,8 @@
+﻿@using AwesomeMvcDemo.Models
+@{ Layout = null; }
+@Html.Awe().TextBox("Search").CssClass("awe-searchtxt").Placeholder("search").HtmlAttributes(new{ style="min-width:150px;"})
+@(Html.Awe().AjaxRadioList("Categories")
+            .Url(Url.Action("GetCategories", "Data"))
+            .Value(Db.Categories.First().Id)
+            .Prefix("MealLookup")
+            .Odropdown())

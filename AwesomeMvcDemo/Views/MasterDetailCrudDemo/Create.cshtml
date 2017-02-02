@@ -1,0 +1,23 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.RestaurantInput
+
+@using (Html.BeginForm())
+{
+    @Html.EditorFor(o => o.Id)
+    @Html.EditorFor(o => o.Name)
+}
+
+@Html.InitCrudPopupsForGrid("AddressesGrid", "AddressesGridCrud", 230)
+
+<div class="bar">
+    <button type="button" class="awe-btn" onclick="awe.open('createAddressesGrid', { params: {restaurantId: '@(Model.Id)' }})">Add address</button>
+</div>
+
+@(Html.Awe().Grid("AddressesGrid")
+      .Url(Url.Action("GridGetItems", "AddressesGridCrud"))
+      .Parameter("restaurantId", Model.Id)
+      .Height(230)
+      .Groupable(false)
+      .Columns(
+          new Column { Bind = "Line1,Line2", ClientFormat = ".Line1 .Line2", Header = "Address" },
+          new Column { ClientFormat = GridUtils.EditFormatForGrid("AddressesGrid"), Width = 52 },
+          new Column { ClientFormat = GridUtils.DeleteFormatForGrid("AddressesGrid"), Width = 52 }))

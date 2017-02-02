@@ -1,0 +1,13 @@
+﻿@model IEnumerable<AwesomeMvcDemo.Models.Meal>
+@{
+    Layout = null;
+}
+@foreach (var o in Model)
+{
+    <tr class="awe-li" data-val="@o.Id">
+        <td>@o.Name</td>
+        <td>@o.Category.Name </td>
+        <td>@o.Description </td>
+    </tr>
+}
+

@@ -1,0 +1,7 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.Settings.SettingsInput
+<div class="setting"> @Html.Awe().Odropdown("chPopupMod", o => o.InLabel("Popup: ")).DataFunc("utils.getItems(popups)").Value(Model.SelectedPopup) </div>
+<div class="setting"> @Html.Awe().Odropdown("chTheme", o => o.InLabel("Theme: ")).DataFunc("utils.getItems(themes)").Value(Model.SelectedTheme) </div>
+<script>
+    var popups = @Html.Raw(DemoUtils.Encode(Model.Popups));
+    var themes = @Html.Raw(DemoUtils.Encode(Model.Themes));
+</script>

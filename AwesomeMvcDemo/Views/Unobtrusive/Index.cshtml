@@ -1,0 +1,32 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.UnobstrusiveInput
+@{
+    ViewBag.Title = "Unobtrusive validation demo";
+}
+
+<h3>Unobtrusive Validation Demo</h3>
+
+@using (Html.BeginForm())
+{
+    @Html.EditorFor(o => o.Name)
+    @Html.EditorFor(o => o.Number)
+    @Html.EditorFor(o => o.MealAuto)
+    @Html.EditorFor(o => o.Date)
+    @Html.EditorFor(o => o.Categories)
+    @Html.EditorFor(o => o.Category2)
+    @Html.EditorFor(o => o.CategoryFo)
+    @Html.EditorFor(o => o.Meal)
+    @Html.EditorFor(o => o.Meals)
+    @Html.EditorFor(o => o.MealsOdd)
+    @Html.EditorFor(o => o.CategoryBgrId)
+    @Html.EditorFor(o => o.CategoriesBgcIds)
+    @Html.EditorFor(o => o.CategoriesMultiIds)
+    @Html.EditorFor(o => o.ColorId)
+    @Html.EditorFor(o => o.MealComboId)
+    <div class="esubmit">
+        <input type="submit" value="submit" class="awe-btn" />
+    </div>
+}
+<h4>click the submit button to see the validation</h4>
+
+
+

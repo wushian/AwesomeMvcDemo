@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "Cacading Grids Demo";
+}
+<h2>Cascading grids</h2>
+<div class="expl">
+    Click on the rows of the first grid to select categories and watch the second grid reload.
+</div>
+<br />
+@*begin*@
+@(Html.Awe().Grid("CategoriesGrid")
+        .Groupable(false)
+        .Url(Url.Action("CategoriesGrid"))
+        .Columns(new Column { Bind = "Name" })
+        .Selectable(SelectionType.Multicheck))
+<br />
+@(Html.Awe().Grid("MealsGrid")
+        .Groupable(false)
+        .MinHeight(200)
+        .Url(Url.Action("MealsGrid"))
+        .Columns(new Column { Bind = "Name" }))
+
+<script>
+    $(function () {
+        $('#CategoriesGrid')
+            .on('aweselect aweload', function () {
+                var selectedIds = $(this).data('api').getSelection().map(function (o) { return o.Id; });
+                $("#MealsGrid").data('api').load({ params: { categories: selectedIds } });
+            });
+    });
+</script>
+@*end*@
+<br />
+<div class="code tabs">
+    <div data-caption="view">@Html.Source("CascadingGridDemo/Index.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/CascadingGridDemoController.cs")</div>
+</div>
+
+

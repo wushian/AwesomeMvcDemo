@@ -1,0 +1,24 @@
+﻿@model AwesomeMvcDemo.Models.SiteMapItem
+@{
+    Layout = null;
+
+    var parentTitle = Model.Parent != null ? Model.Parent.Name : "";
+}
+
+<h4>@parentTitle @Model.Name </h4>
+<ul>
+    @foreach (var item in Model.Children)
+    {
+        <li>
+            @if (item.Children == null)
+            {
+                @Html.ActionLink(item.Name, item.Action, item.Controller)
+            }
+            else
+            {
+                @Html.Partial("parent", item)
+            }
+        </li>
+    }
+</ul>
+

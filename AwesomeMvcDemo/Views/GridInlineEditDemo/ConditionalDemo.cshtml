@@ -1,0 +1,78 @@
+﻿@using AwesomeMvcDemo.Models
+@{
+    ViewBag.Title = "Grid inline editing conditional Demo";
+}
+<h1>Grid inline editing conditional</h1>
+@*begin*@
+@Html.InitDeletePopupForGrid("DinnersGrid2", "GridInlineEditDemo")
+
+<div class="bar">
+    @Html.Awe().Button().Text("Create").OnClick("$('#DinnersGrid2').data('api').inlineCreate()").CssClass("mbtn")
+</div>
+@{
+    var isAdmin = false;
+}
+@(Html.Awe().Grid("DinnersGrid2")
+      .Mod(o => o.PageInfo().InlineEdit(Url.Action("Create"), Url.Action("Edit")))
+      .Url(Url.Action("GridGetItems"))
+      .Height(350)
+      .Resizable(true)
+      .Columns(
+          new Column { Bind = "Id", Width = 75 }.Mod(o => o.InlineId()),
+          new Column { Bind = "Name"}.Mod(o =>
+          {
+              if (isAdmin)
+                  o.Inline(Html.Awe().TextBox("Name"));
+              else
+                  o.InlineReadonly();// readonly, used if you set isAdmin = false 
+          }),
+          new Column { Bind = "Date", Width = 170 }
+            .Mod(o => o.InlineFunc("dateCond",
+                f => f.Param("<input type='hidden' name='Date' value='#Value'/>#Value")
+                      .Param(Html.Awe().DatePicker("Date"))
+                )),
+          new Column { Bind = "Chef.FirstName,Chef.LastName", ClientFormat = ".ChefName", Header = "Chef", Width = 200 }
+            .Mod(o => o.Inline(Html.Awe().Lookup("Chef").Controller("ChefLookup"), "ChefId")),
+          new Column { ClientFormat = ".Meals", Header = "Meals", Width = 220 }
+          .Mod(o => o.Inline(Html.Awe().AjaxCheckboxList("Meals").Multiselect().DataFunc("utils.getItems(meals)"), "MealsIds")),
+          new Column { Bind = "BonusMeal.Name", ClientFormat = ".BonusMeal", Header = "Bonus Meal" }
+            .Mod(o => o.Inline(Html.Awe().AjaxRadioList("BonusMealId").DataFunc("utils.getItems(meals)").Odropdown(), "BonusMealId")),
+            new Column { Bind = "Organic", Width = 100, ClientFormat = ".DispOrganic" }.Mod(o => o.InlineBool(cssClass: "btoggle")),
+          new Column { ClientFormatFunc = "editff", Width = 60 },
+          new Column { ClientFormat = GridUtils.InlineDeleteFormat("deleteDinnersGrid2"), Width = 70 }))
+<script>
+    function dateCond(o, params) {
+        if (o.DateReadOnly) return params[0];
+        return params[1];
+    }
+
+    function editff(o) {
+        return o.Editable === false ? "": "@Html.Raw(GridUtils.InlineEditFormat())";
+    }
+</script>
+@*end*@
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+
+<script>
+    var meals = @Html.Raw(DemoUtils.Encode(Db.Meals.Select(o => new KeyContent(o.Id, o.Name))));
+
+    $(function() {
+        $(document).on('aweinlineedit', function() {
+            $(this).find(".btoggle").bootstrapToggle({
+                on: 'Yes',
+                off: 'No'
+            });
+        });
+    });
+</script>
+
+<br />
+<div class="tabs">
+    <div class="expl" data-caption="description">
+        rows with 1 meal are not editable<br />
+        dates with year less than 2012 are readonly
+    </div>
+    <div data-caption="view">@Html.Source("GridInlineEditDemo/ConditionalDemo.cshtml")</div>
+    <div data-caption="controller">@Html.Csource("Demos/Grid/GridInlineEditDemoController.cs")</div>
+</div>

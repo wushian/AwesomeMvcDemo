@@ -1,0 +1,8 @@
+﻿@model AwesomeMvcDemo.ViewModels.Input.RestaurantAddressInput
+
+@using (Html.BeginForm())
+{
+    @Html.EditorFor(o => o.RestaurantId)
+    @Html.EditorFor(o => o.Line1)
+    @Html.EditorFor(o => o.Line2)
+}
